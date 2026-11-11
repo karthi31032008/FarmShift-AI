@@ -20,19 +20,25 @@ def analyze():
 
     if water == "Low":
         suggestion = "Review irrigation requirements."
+        vegetation = "Needs Attention"
+
     elif water == "Medium":
         suggestion = "Monitor soil moisture regularly."
+        vegetation = "Moderate"
+
     else:
         suggestion = "Monitor drainage conditions."
+        vegetation = "Monitor Crop Condition"
 
     return jsonify({
         "status": "success",
         "crop": crop,
         "soil": soil,
         "water": water,
+        "vegetation": vegetation,
         "recommendation": suggestion
     })
-
+    
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
   
