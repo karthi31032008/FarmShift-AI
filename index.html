@@ -435,35 +435,52 @@ document.querySelectorAll("nav a").forEach(link => {
  });
 });
 
-function analyze() {
- let crop = document.getElementById("crop").value;
- let soil = document.getElementById("soil").value;
- let water = document.getElementById("water").value;
- let result = document.getElementById("result");
 
- if (!crop || !soil || !water) {
-  result.innerHTML = "Please select all details.";
-  return;
- }
+async function analyze() {
+    let crop = document.getElementById("crop").value;
+    let soil = document.getElementById("soil").value;
+    let water = document.getElementById("water").value;
+    let result = document.getElementById("result");
 
- let suggestion = "";
+    if (!crop || !soil || !water) {
+        result.innerHTML = "Please select all details.";
+        return;
+    }
 
- if (water === "Low") {
-  suggestion = "Review irrigation requirements.";
- } else if (water === "Medium") {
-  suggestion = "Monitor soil moisture regularly.";
- } else {
-  suggestion = "Monitor drainage and avoid waterlogging.";
- }
+    result.innerHTML = "Connecting to FarmShift AI server...";
 
- result.innerHTML =
-  "✅ Demo Analysis Generated<br><br>" +
-  "Crop: " + crop + "<br>" +
-  "Soil: " + soil + "<br>" +
-  "Water: " + water + "<br><br>" +
-  "Demo Suggestion: " + suggestion +
-  "<br><br><small>This is a sample result, not a scientifically validated AI prediction.</small>";
+    try {
+        const response = await fetch("/api/analyze", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                crop: crop,
+                soil: soil,
+                water: water
+            })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(data.error || "Analysis failed");
+        }
+
+        result.innerHTML =
+            "✅ Backend Analysis Generated<br><br>" +
+            "Crop: " + data.crop + "<br>" +
+            "Soil: " + data.soil + "<br>" +
+            "Water: " + data.water + "<br><br>" +
+            "Suggestion: " + data.recommendation +
+            "<br><br><small>Demo recommendation, not a scientifically validated AI prediction.</small>";
+
+    } catch (error) {
+        result.innerHTML = "Server error: " + error.message;
+    }
 }
+ 
 
 function sendMessage() {
  let name = document.getElementById("name").value.trim();
