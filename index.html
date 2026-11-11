@@ -1,0 +1,488 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI - Smart Agriculture</title>
+
+<style>
+* {
+ margin:0;
+ padding:0;
+ box-sizing:border-box;
+ scroll-behavior:smooth;
+ font-family:Arial,sans-serif;
+}
+body {
+ background:#07140e;
+ color:#f3fff5;
+}
+header {
+ position:sticky;
+ top:0;
+ z-index:100;
+ background:#0d2117;
+ padding:18px 7%;
+ display:flex;
+ justify-content:space-between;
+ align-items:center;
+ border-bottom:1px solid #244a31;
+}
+.logo {
+ font-size:24px;
+ font-weight:bold;
+ color:#75e69c;
+}
+nav {display:flex;gap:18px}
+nav a {
+ color:white;
+ text-decoration:none;
+ font-size:14px;
+}
+nav a:hover {color:#75e69c}
+.menu {
+ display:none;
+ background:none;
+ color:white;
+ border:0;
+ font-size:25px;
+}
+.hero {
+ min-height:570px;
+ padding:100px 8%;
+ display:flex;
+ align-items:center;
+ background:linear-gradient(120deg,#07140e,#153c25);
+}
+.hero-content {max-width:700px}
+.tag {
+ color:#75e69c;
+ letter-spacing:3px;
+ margin-bottom:20px;
+ font-size:13px;
+}
+h1 {
+ font-size:clamp(40px,7vw,70px);
+ line-height:1.15;
+ margin-bottom:22px;
+}
+h1 span,.green {color:#75e69c}
+.hero p {
+ color:#bdcfc1;
+ line-height:1.8;
+ font-size:17px;
+}
+.btn {
+ display:inline-block;
+ margin-top:25px;
+ padding:14px 25px;
+ background:#75e69c;
+ color:#07140e;
+ border:0;
+ border-radius:8px;
+ font-weight:bold;
+ cursor:pointer;
+ text-decoration:none;
+}
+.btn:hover {background:#a6f5bb}
+section {padding:80px 8%}
+.heading {
+ text-align:center;
+ margin-bottom:40px;
+}
+.heading h2 {
+ font-size:35px;
+ margin-bottom:15px;
+}
+.heading p {
+ color:#aabdaf;
+ line-height:1.7;
+}
+.cards {
+ display:grid;
+ grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+ gap:22px;
+}
+.card {
+ background:#10251a;
+ border:1px solid #284b34;
+ border-radius:15px;
+ padding:27px;
+ transition:.3s;
+}
+.card:hover {
+ transform:translateY(-5px);
+ border-color:#75e69c;
+}
+.icon {font-size:35px;margin-bottom:15px}
+.card h3 {
+ color:#75e69c;
+ margin-bottom:12px;
+}
+.card p {
+ color:#b4c7b8;
+ line-height:1.7;
+ font-size:14px;
+}
+.dashboard {background:#0c1e14}
+.stat {
+ font-size:30px;
+ color:#75e69c;
+ font-weight:bold;
+ margin:15px 0;
+}
+.small {color:#aabdaf;font-size:12px}
+.map {
+ min-height:250px;
+ margin-top:30px;
+ padding:25px;
+ border-radius:15px;
+ background:linear-gradient(135deg,#173c26,#0d2518);
+ border:1px solid #355b40;
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ text-align:center;
+}
+.map h3 {color:#75e69c;margin:15px}
+.formbox {
+ max-width:650px;
+ margin:auto;
+ background:#10251a;
+ border:1px solid #284b34;
+ padding:30px;
+ border-radius:15px;
+}
+label {
+ display:block;
+ color:#c8dfce;
+ font-size:14px;
+}
+input,select,textarea {
+ width:100%;
+ padding:14px;
+ margin:10px 0 18px;
+ background:#09170f;
+ color:white;
+ border:1px solid #355b40;
+ border-radius:7px;
+}
+.result {
+ margin-top:20px;
+ color:#75e69c;
+ line-height:1.8;
+}
+.about {background:#0c1e14}
+footer {
+ background:#061009;
+ text-align:center;
+ padding:35px;
+ color:#aabdaf;
+ line-height:2;
+}
+footer strong {color:#75e69c}
+
+@media(max-width:750px) {
+ header {padding:17px 5%}
+ .menu {display:block}
+ nav {
+  display:none;
+  position:absolute;
+  top:65px;
+  left:0;
+  width:100%;
+  padding:20px;
+  background:#0d2117;
+  flex-direction:column;
+ }
+ nav.show {display:flex}
+ .hero {padding:80px 7%;min-height:480px}
+ section {padding:65px 6%}
+ .heading h2 {font-size:29px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+ <div class="logo">🌱 FarmShift AI</div>
+ <button class="menu" onclick="toggleMenu()">☰</button>
+ <nav id="nav">
+  <a href="#home">Home</a>
+  <a href="#features">Features</a>
+  <a href="#dashboard">Dashboard</a>
+  <a href="#nasa">NASA Data</a>
+  <a href="#ai">AI Tools</a>
+  <a href="#about">About</a>
+  <a href="#contact">Contact</a>
+ </nav>
+</header>
+
+<!-- HOME -->
+<div class="hero" id="home">
+ <div class="hero-content">
+  <div class="tag">SMART AGRICULTURE • FUTURE TECHNOLOGY</div>
+  <h1>Transforming <span>Agriculture</span> With Intelligence.</h1>
+  <p>Discover a smarter way to understand agriculture. FarmShift AI explores satellite insights, environmental data and artificial intelligence to support better farming decisions.</p>
+  <a href="#dashboard" class="btn">Explore Dashboard →</a>
+ </div>
+</div>
+
+<!-- FEATURES -->
+<section id="features">
+ <div class="heading">
+  <h2>Our <span class="green">Features</span></h2>
+  <p>Technology designed for smarter agricultural decisions.</p>
+ </div>
+ <div class="cards">
+  <div class="card">
+   <div class="icon">🛰️</div>
+   <h3>Satellite Insights</h3>
+   <p>Explore satellite-based information and agricultural land conditions.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🌦️</div>
+   <h3>Weather Monitoring</h3>
+   <p>Understand environmental conditions that influence farming.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🌿</div>
+   <h3>Crop Monitoring</h3>
+   <p>Learn about crop health indicators and field conditions.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🤖</div>
+   <h3>AI Recommendations</h3>
+   <p>Explore intelligent suggestions based on agricultural information.</p>
+  </div>
+  <div class="card">
+   <div class="icon">💧</div>
+   <h3>Water Awareness</h3>
+   <p>Understand water resources and sustainable agriculture.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🌍</div>
+   <h3>Climate Insights</h3>
+   <p>Explore climate patterns and their impact on farming.</p>
+  </div>
+ </div>
+</section>
+
+<!-- DASHBOARD -->
+<section class="dashboard" id="dashboard">
+ <div class="heading">
+  <h2>Farm <span class="green">Dashboard</span></h2>
+  <p>A simple overview of agricultural monitoring features.</p>
+ </div>
+ <div class="cards">
+  <div class="card">
+   <div class="icon">🌱</div>
+   <h3>Crop Health</h3>
+   <div class="stat">Monitor</div>
+   <div class="small">Field observation status</div>
+  </div>
+  <div class="card">
+   <div class="icon">🌧️</div>
+   <h3>Weather</h3>
+   <div class="stat">Explore</div>
+   <div class="small">Live data integration pending</div>
+  </div>
+  <div class="card">
+   <div class="icon">🛰️</div>
+   <h3>Satellite</h3>
+   <div class="stat">Ready</div>
+   <div class="small">Satellite integration pending</div>
+  </div>
+  <div class="card">
+   <div class="icon">🤖</div>
+   <h3>AI Analysis</h3>
+   <div class="stat">Demo</div>
+   <div class="small">Sample interface</div>
+  </div>
+ </div>
+ <div class="map">
+  <div>
+   <div style="font-size:50px">🗺️</div>
+   <h3>Farm Monitoring Map</h3>
+   <p>Satellite map integration can be added here.</p>
+  </div>
+ </div>
+</section>
+
+<!-- NASA DATA -->
+<section id="nasa">
+ <div class="heading">
+  <h2>NASA <span class="green">Earth Data</span></h2>
+  <p>Explore how Earth observation can support agriculture.</p>
+ </div>
+ <div class="cards">
+  <div class="card">
+   <div class="icon">🛰️</div>
+   <h3>Earth Observation</h3>
+   <p>Explore satellite observations of Earth's surface.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🌡️</div>
+   <h3>Land Temperature</h3>
+   <p>Study land surface temperature and environmental changes.</p>
+  </div>
+  <div class="card">
+   <div class="icon">🌧️</div>
+   <h3>Precipitation</h3>
+   <p>Understand rainfall patterns using Earth observation datasets.</p>
+  </div>
+ </div>
+</section>
+
+<!-- AI ASSISTANT -->
+<section class="dashboard" id="ai">
+ <div class="heading">
+  <h2>AI <span class="green">Farm Assistant</span></h2>
+  <p>Enter sample details to explore a basic demo analysis.</p>
+ </div>
+ <div class="formbox">
+  <label>Crop Name</label>
+  <select id="crop">
+   <option value="">Select Crop</option>
+   <option>Rice</option>
+   <option>Wheat</option>
+   <option>Maize</option>
+   <option>Cotton</option>
+   <option>Sugarcane</option>
+  </select>
+
+  <label>Soil Type</label>
+  <select id="soil">
+   <option value="">Select Soil</option>
+   <option>Clay</option>
+   <option>Sandy</option>
+   <option>Loamy</option>
+   <option>Black Soil</option>
+  </select>
+
+  <label>Water Availability</label>
+  <select id="water">
+   <option value="">Select Availability</option>
+   <option>Low</option>
+   <option>Medium</option>
+   <option>High</option>
+  </select>
+
+  <button class="btn" onclick="analyze()">Generate Analysis →</button>
+  <div class="result" id="result"></div>
+ </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about" id="about">
+ <div class="heading">
+  <h2>About <span class="green">FarmShift AI</span></h2>
+  <p>Building a smarter and more sustainable agricultural future.</p>
+ </div>
+ <div class="cards">
+  <div class="card">
+   <h3>Our Mission</h3>
+   <p>Make agricultural information easier to understand through technology.</p>
+  </div>
+  <div class="card">
+   <h3>Our Vision</h3>
+   <p>Support sustainable farming using satellite insights and AI.</p>
+  </div>
+  <div class="card">
+   <h3>Our Innovation</h3>
+   <p>Connect agriculture, Earth observation and artificial intelligence.</p>
+  </div>
+ </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+ <div class="heading">
+  <h2>Contact <span class="green">Us</span></h2>
+  <p>Have questions or ideas? Send us a message.</p>
+ </div>
+ <div class="formbox">
+  <label>Your Name</label>
+  <input type="text" id="name" placeholder="Enter your name">
+
+  <label>Email Address</label>
+  <input type="email" id="email" placeholder="Enter your email">
+
+  <label>Message</label>
+  <textarea id="message" rows="5" placeholder="Write your message"></textarea>
+
+  <button class="btn" onclick="sendMessage()">Send Message →</button>
+  <div class="result" id="contactResult"></div>
+ </div>
+</section>
+
+<footer>
+ <p>🌱 <strong>FarmShift AI</strong></p>
+ <p>Innovating Agriculture Through Intelligence.</p>
+ <p>NASA Space Apps Challenge Project | Frontend Demo</p>
+</footer>
+
+<script>
+function toggleMenu() {
+ document.getElementById("nav").classList.toggle("show");
+}
+
+document.querySelectorAll("nav a").forEach(link => {
+ link.addEventListener("click", () => {
+  document.getElementById("nav").classList.remove("show");
+ });
+});
+
+function analyze() {
+ let crop = document.getElementById("crop").value;
+ let soil = document.getElementById("soil").value;
+ let water = document.getElementById("water").value;
+ let result = document.getElementById("result");
+
+ if (!crop || !soil || !water) {
+  result.innerHTML = "Please select all details.";
+  return;
+ }
+
+ let suggestion = "";
+
+ if (water === "Low") {
+  suggestion = "Review irrigation requirements.";
+ } else if (water === "Medium") {
+  suggestion = "Monitor soil moisture regularly.";
+ } else {
+  suggestion = "Monitor drainage and avoid waterlogging.";
+ }
+
+ result.innerHTML =
+  "✅ Demo Analysis Generated<br><br>" +
+  "Crop: " + crop + "<br>" +
+  "Soil: " + soil + "<br>" +
+  "Water: " + water + "<br><br>" +
+  "Demo Suggestion: " + suggestion +
+  "<br><br><small>This is a sample result, not a scientifically validated AI prediction.</small>";
+}
+
+function sendMessage() {
+ let name = document.getElementById("name").value.trim();
+ let email = document.getElementById("email").value.trim();
+ let message = document.getElementById("message").value.trim();
+
+ let output = document.getElementById("contactResult");
+
+ if (!name || !email || !message) {
+  output.innerText = "Please fill all fields.";
+  return;
+ }
+
+ output.innerText =
+  "Thank you, " + name +
+  "! This is a frontend demo. Message delivery is not connected yet.";
+}
+</script>
+
+</body>
+                </html>
+                
