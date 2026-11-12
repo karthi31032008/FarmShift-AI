@@ -2,7 +2,19 @@
 from flask import Flask, request, jsonify, send_from_directory
 
 app = Flask(__name__)
+import os
+import json
+import firebase_admin
+from firebase_admin import credentials, firestore
 
+if not firebase_admin._apps:
+    firebase_config = json.loads(
+        os.environ["GOOGLE_CREDENTIALS"]
+    )
+    cred = credentials.Certificate(firebase_config)
+    firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 @app.route("/")
 def home():
     return send_from_directory(".", "index.html")
