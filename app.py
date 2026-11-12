@@ -13,10 +13,12 @@ def analyze():
 
     crop = data.get("crop", "")
     soil = data.get("soil", "")
+    village = data.get("village", "")
+    district = data.get("district", "")
     water = data.get("water", "")
 
-    if not crop or not soil or not water:
-        return jsonify({"error": "Please enter all details"}), 400
+    if not crop or not soil or not village or not district or not water:
+    return jsonify({"error": "Please enter all details"}), 400
 
     if water == "Low":
         suggestion = "Review irrigation requirements."
@@ -32,6 +34,8 @@ def analyze():
 
     return jsonify({
         "status": "success",
+        "village": village,
+        "district": district,
         "crop": crop,
         "soil": soil,
         "water": water,
