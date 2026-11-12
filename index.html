@@ -352,7 +352,11 @@ footer strong {color:#75e69c}
    <option>Cotton</option>
    <option>Sugarcane</option>
   </select>
+  <label>Village Name</label>
+  <input type="text" id="village" placeholder="Enter Village Name">
 
+  <label>District Name</label>
+  <input type="text" id="district" placeholder="Enter District Name">
   <label>Soil Type</label>
   <select id="soil">
    <option value="">Select Soil</option>
@@ -441,9 +445,11 @@ async function analyze() {
 let crop = document.getElementById("crop").value;
 let soil = document.getElementById("soil").value;
 let water = document.getElementById("water").value;
+let village = document.getElementById("village").value;
+let district = document.getElementById("district").value;
 let result = document.getElementById("result");
 
-if (!crop || !soil || !water) {  
+if (!crop || !soil || !water|| !village || !district) {  
     result.innerHTML = "Please select all details.";  
     return;  
 }  
@@ -456,11 +462,15 @@ try {
         headers: {  
             "Content-Type": "application/json"  
         },  
-        body: JSON.stringify({  
-            crop: crop,  
-            soil: soil,  
-            water: water  
-        })  
+        
+body: JSON.stringify({
+    crop: crop,
+    village: village,
+    district: district,
+    soil: soil,
+    water: water
+})
+     
     });  
 
     const data = await response.json();  
