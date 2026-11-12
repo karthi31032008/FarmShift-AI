@@ -18,8 +18,6 @@ def analyze():
     water = data.get("water", "")
 
     if not crop or not soil or not village or not district or not water:
-    if not condition:
-    # Make sure this return statement is indented under the if statement
     return jsonify({"error": "Please enter all details"}), 400
 
     if water == "Low":
