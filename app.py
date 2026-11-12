@@ -1,12 +1,20 @@
 
-from flask import Flask, request, jsonify, send_from_directory
+import os
+import requests
+import firebase_admin
+
+from flask import (
+    Flask, request, jsonify, send_from_directory,
+    render_template, session, redirect, url_for
+)
+
+from firebase_admin import credentials, firestore, auth
 
 app = Flask(__name__)
-import os
-import json
-import firebase_admin
-from firebase_admin import credentials, firestore
 
+app.secret_key = os.environ.get("FLASK_SECRET_KEY", "change-this-secret")
+
+# Firebase connection
 if not firebase_admin._apps:
     cred = credentials.Certificate(
         "/etc/secrets/serviceAccountKey.json"
@@ -15,14 +23,113 @@ if not firebase_admin._apps:
 
 db = firestore.client()
 
-db = firestore.client()
+
+# HOME - Login page
 @app.route("/")
-def home():
+@app.route("/login", methods=["GET"])
+def login():
+    return render_template("login.html")
+
+
+# SIGNUP PAGE
+@app.route("/signup", methods=["GET"])
+def signup():
+    return render_template("signup.html")
+
+
+# USERNAME TO EMAIL
+@app.route("/api/auth/username-email", methods=["POST"])
+def username_email():
+    data = request.get_json(silent=True) or {}
+    username = data.get("username", "").strip()
+
+    if not username:
+        return jsonify({"error": "Username required"}), 400
+
+    users = db.collection("users").where(
+        "username", "==", username
+    ).limit(1).stream()
+
+    for user in users:
+        return jsonify({"email": user.to_dict().get("email")})
+
+    return jsonify({"error": "Account not found"}), 404
+
+
+# SAVE USER PROFILE AFTER FIREBASE SIGNUP
+@app.route("/api/auth/profile", methods=["POST"])
+def save_profile():
+    data = request.get_json(silent=True) or {}
+
+    token = request.headers.get("Authorization", "")
+    if not token.startswith("Bearer "):
+        return jsonify({"error": "Authentication required"}), 401
+
+    try:
+        decoded = auth.verify_id_token(token.split(" ", 1)[1])
+        uid = decoded["uid"]
+        email = decoded.get("email", "")
+    except Exception:
+        return jsonify({"error": "Invalid login token"}), 401
+
+    username = data.get("username", "").strip()
+
+    if not username:
+        return jsonify({"error": "Username required"}), 400
+
+    existing = db.collection("users").where(
+        "username", "==", username
+    ).limit(1).stream()
+
+    for user in existing:
+        if user.id != uid:
+            return jsonify({"error": "Username already exists"}), 409
+
+    db.collection("users").document(uid).set({
+        "username": username,
+        "email": email,
+        "created_at": firestore.SERVER_TIMESTAMP
+    }, merge=True)
+
+    return jsonify({"status": "success"})
+
+
+# CREATE FLASK LOGIN SESSION
+@app.route("/api/auth/session", methods=["POST"])
+def create_session():
+    token = request.headers.get("Authorization", "")
+
+    if not token.startswith("Bearer "):
+        return jsonify({"error": "Login required"}), 401
+
+    try:
+        decoded = auth.verify_id_token(token.split(" ", 1)[1])
+        session["uid"] = decoded["uid"]
+        return jsonify({"status": "success"})
+    except Exception:
+        return jsonify({"error": "Invalid token"}), 401
+
+
+# DASHBOARD - LOGIN REQUIRED
+@app.route("/dashboard")
+def dashboard():
+    if "uid" not in session:
+        return redirect(url_for("login"))
+
     return send_from_directory(".", "index.html")
 
+
+# LOGOUT
+@app.route("/logout")
+def logout():
+    session.clear()
+    return redirect(url_for("login"))
+
+
+# CROP ANALYSIS API
 @app.route("/api/analyze", methods=["POST"])
 def analyze():
-    data = request.get_json()
+    data = request.get_json(silent=True) or {}
 
     crop = data.get("crop", "")
     soil = data.get("soil", "")
@@ -30,7 +137,7 @@ def analyze():
     district = data.get("district", "")
     water = data.get("water", "")
 
-    if not crop or not soil or not village or not district or not water:
+    if not all([crop, soil, village, district, water]):
         return jsonify({"error": "Please enter all details"}), 400
 
     if water == "Low":
@@ -44,8 +151,7 @@ def analyze():
     else:
         suggestion = "Monitor drainage conditions."
         vegetation = "Monitor Crop Condition"
-    
-    # Save search data automatically in Firebase
+
     db.collection("search_history").add({
         "crop": crop,
         "soil": soil,
@@ -56,7 +162,6 @@ def analyze():
         "recommendation": suggestion,
         "created_at": firestore.SERVER_TIMESTAMP
     })
-    
 
     return jsonify({
         "status": "success",
@@ -68,13 +173,9 @@ def analyze():
         "vegetation": vegetation,
         "recommendation": suggestion
     })
-    
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=5000)
-  
 
-import requests
 
+# WEATHER API
 @app.route("/weather")
 def weather():
     latitude = request.args.get("lat", "11.6643")
@@ -90,5 +191,11 @@ def weather():
         "timezone": "auto"
     }
 
-    response = requests.get(url, params=params)
+    response = requests.get(url, params=params, timeout=15)
     return jsonify(response.json())
+
+
+# START SERVER - ALWAYS KEEP THIS AT THE END
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=5000)
+    
