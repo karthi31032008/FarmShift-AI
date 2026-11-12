@@ -46,3 +46,23 @@ def analyze():
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
   
+
+import requests
+
+@app.route("/weather")
+def weather():
+    latitude = request.args.get("lat", "11.6643")
+    longitude = request.args.get("lon", "78.1460")
+
+    url = "https://api.open-meteo.com/v1/forecast"
+
+    params = {
+        "latitude": latitude,
+        "longitude": longitude,
+        "current": "temperature_2m,relative_humidity_2m,precipitation,wind_speed_10m",
+        "daily": "temperature_2m_max,temperature_2m_min,precipitation_probability_max",
+        "timezone": "auto"
+    }
+
+    response = requests.get(url, params=params)
+    return jsonify(response.json())
