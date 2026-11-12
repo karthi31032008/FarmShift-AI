@@ -134,51 +134,7 @@
             height: 1px;
             background: #ddd;
         }
-
-        .google-btn {
-            width: 100%;
-            padding: 13px;
-            border: 1px solid #ddd;
-            background: white;
-            border-radius: 8px;
-            font-size: 15px;
-            cursor: pointer;
-        }
-
-        .google-btn:hover {
-            background: #f8f8f8;
-        }
-
-        .signup {
-            text-align: center;
-            margin-top: 25px;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .signup a {
-            color: #218838;
-            font-weight: bold;
-            text-decoration: none;
-        }
-
-        footer {
-            text-align: center;
-            padding: 18px;
-            color: #999;
-            font-size: 13px;
-        }
-
-        @media(max-width: 480px) {
-            .login-box {
-                padding: 25px 20px;
-            }
-
-            header {
-                padding: 18px 5%;
-            }
-        }
-    </style>
+<link rel="stylesheet" href="{{ url_for('static', filename='login.css') }}">
 </head>
 
 <body>
