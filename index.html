@@ -524,6 +524,67 @@ function sendMessage() {
   "Thank you, " + name +
   "! This is a frontend demo. Message delivery is not connected yet.";
 }
+ 
+function showFeature(feature) {
+  const features = {
+    satellite: {
+      title: "🛰️ Satellite Insights",
+      description: "Explore satellite-based agricultural land information and vegetation conditions."
+    },
+    weather: {
+      title: "🌦️ Weather Monitoring",
+      description: "Monitor weather conditions and understand their impact on farming."
+    },
+    crop: {
+      title: "🌿 Crop Monitoring",
+      description: "Understand crop health, vegetation status and field conditions."
+    },
+    ai: {
+      title: "🤖 AI Recommendations",
+      description: "Get agricultural suggestions based on crop, soil and water information."
+    },
+    water: {
+      title: "💧 Water Awareness",
+      description: "Learn about water availability and sustainable irrigation practices."
+    },
+    climate: {
+      title: "🌍 Climate Insights",
+      description: "Explore climate patterns and their effects on agriculture."
+    }
+  };
+
+  const item = features[feature];
+
+  if (!item) return;
+
+  const oldPopup = document.getElementById("featurePopup");
+  if (oldPopup) oldPopup.remove();
+
+  document.body.insertAdjacentHTML("beforeend", `
+    <div id="featurePopup"
+      style="position:fixed;inset:0;background:#0009;
+      display:flex;align-items:center;justify-content:center;
+      z-index:9999;padding:20px;">
+
+      <div style="background:white;padding:30px;
+        border-radius:16px;max-width:400px;width:100%;
+        color:#222;">
+
+        <h2>${item.title}</h2>
+        <p>${item.description}</p>
+
+        <button onclick="document.getElementById('featurePopup').remove()"
+          style="background:#16a34a;color:white;
+          padding:12px 24px;border:0;border-radius:8px;
+          cursor:pointer;">
+          Close
+        </button>
+
+      </div>
+    </div>
+  `);
+ }
+ 
 </script>
 
 </body>
