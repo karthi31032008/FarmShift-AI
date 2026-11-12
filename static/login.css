@@ -1,0 +1,217 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', Arial, sans-serif;
+}
+
+body {
+    background: #f7faf7;
+    min-height: 100vh;
+    color: #222;
+}
+
+/* Header */
+
+header {
+    width: 100%;
+    padding: 20px 7%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: #ffffff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+}
+
+.logo {
+    font-size: 25px;
+    font-weight: 700;
+    color: #218838;
+}
+
+.logo span {
+    color: #222;
+}
+
+.top-link {
+    color: #218838;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+/* Main Container */
+
+.container {
+    min-height: 85vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 15px;
+}
+
+/* Login and Signup Box */
+
+.login-box,
+.signup-box {
+    background: #ffffff;
+    width: 100%;
+    max-width: 430px;
+    padding: 38px 32px;
+    border-radius: 18px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.07);
+}
+
+h2 {
+    text-align: center;
+    font-size: 27px;
+    margin-bottom: 10px;
+    color: #222;
+}
+
+.subtitle {
+    text-align: center;
+    color: #888;
+    font-size: 14px;
+    margin-bottom: 30px;
+}
+
+/* Labels */
+
+label {
+    display: block;
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 9px;
+    color: #333;
+}
+
+/* Input Fields */
+
+input {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 20px;
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+    font-size: 14px;
+    outline: none;
+    transition: 0.3s;
+    background: #fff;
+}
+
+input:focus {
+    border-color: #218838;
+    box-shadow: 0 0 5px rgba(33,136,56,0.15);
+}
+
+/* Forgot Password */
+
+.forgot {
+    display: block;
+    text-align: right;
+    color: #218838;
+    font-size: 13px;
+    text-decoration: none;
+    margin-top: -10px;
+    margin-bottom: 20px;
+}
+
+/* Buttons */
+
+.login-btn,
+.signup-box button {
+    width: 100%;
+    padding: 14px;
+    background: #218838;
+    color: #ffffff;
+    border: none;
+    border-radius: 9px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.login-btn:hover,
+.signup-box button:hover {
+    background: #176b2b;
+}
+
+/* Google Button */
+
+.google-btn {
+    width: 100%;
+    padding: 14px;
+    background: #ffffff;
+    border: 1px solid #dddddd;
+    border-radius: 9px;
+    font-size: 15px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.google-btn:hover {
+    background: #f5f5f5;
+}
+
+/* OR Divider */
+
+.or {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+    color: #999;
+}
+
+.or::before,
+.or::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: #dddddd;
+}
+
+/* Signup and Signin Links */
+
+.signup,
+.signin {
+    text-align: center;
+    margin-top: 25px;
+    color: #666;
+    font-size: 14px;
+}
+
+.signup a,
+.signin a {
+    color: #218838;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+/* Footer */
+
+footer {
+    text-align: center;
+    padding: 18px;
+    color: #999;
+    font-size: 13px;
+}
+
+/* Mobile Responsive */
+
+@media (max-width: 480px) {
+    header {
+        padding: 18px 5%;
+    }
+
+    .login-box,
+    .signup-box {
+        padding: 28px 22px;
+    }
+
+    h2 {
+        font-size: 24px;
+    }
+}
