@@ -44,6 +44,19 @@ def analyze():
     else:
         suggestion = "Monitor drainage conditions."
         vegetation = "Monitor Crop Condition"
+    
+    # Save search data automatically in Firebase
+    db.collection("search_history").add({
+        "crop": crop,
+        "soil": soil,
+        "village": village,
+        "district": district,
+        "water": water,
+        "vegetation": vegetation,
+        "recommendation": suggestion,
+        "created_at": firestore.SERVER_TIMESTAMP
+    })
+    
 
     return jsonify({
         "status": "success",
