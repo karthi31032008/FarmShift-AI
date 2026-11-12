@@ -8,11 +8,12 @@ import firebase_admin
 from firebase_admin import credentials, firestore
 
 if not firebase_admin._apps:
-    firebase_config = json.loads(
-        os.environ["GOOGLE_CREDENTIALS"]
+    cred = credentials.Certificate(
+        "/etc/secrets/serviceAccountKey.json"
     )
-    cred = credentials.Certificate(firebase_config)
     firebase_admin.initialize_app(cred)
+
+db = firestore.client()
 
 db = firestore.client()
 @app.route("/")
