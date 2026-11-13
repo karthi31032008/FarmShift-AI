@@ -209,6 +209,45 @@
 <footer>
     © 2026 FarmShift-AI | Smart Farming Solutions
 </footer>
+<script type="module">
+import {
+    auth,
+    googleProvider
+} from "{{ url_for('static', filename='auth.js') }}";
 
+import {
+    signInWithEmailAndPassword,
+    signInWithPopup
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const email = form.querySelector('[name="username"]').value;
+    const password = form.querySelector('[name="password"]').value;
+
+    try {
+        const result = await signInWithEmailAndPassword(
+            auth, email, password
+        );
+
+        window.location.href = "/dashboard";
+
+    } catch (error) {
+        alert(error.message);
+    }
+});
+
+document.querySelector(".google-btn").addEventListener("click", async () => {
+    try {
+        await signInWithPopup(auth, googleProvider);
+        window.location.href = "/dashboard";
+    } catch (error) {
+        alert(error.message);
+    }
+});
+</script>
 </body>
 </html>
