@@ -254,11 +254,13 @@ def nasa_weather():
 @app.route('/satellite')
 def satellite():
     return render_template('satellite.html')
-    @app.route('/weather')
+
+
+@app.route('/weather')
 def weather():
     return render_template('weather.html')
-    
+
+
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
-    
