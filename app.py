@@ -271,10 +271,7 @@ def ai_recommendation():
 
 @app.route("/water-awareness")
 def water_awareness():
-    return send_from_directory(
-        app.static_folder,
-        "water-awareness.html"
-    )
+    return render_template("water-awareness.html")
     
 
 
