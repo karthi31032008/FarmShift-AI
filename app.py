@@ -250,7 +250,10 @@ def nasa_weather():
         return jsonify({
             "error": "Unable to process NASA data"
         }), 500
-
+        
+@app.route('/satellite')
+def satellite():
+    return render_template('satellite.html')
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
