@@ -605,6 +605,103 @@ function showFeature(feature) {
     </div>
   `);
  }
+
+
+function showFeature(feature) {
+
+    const features = {
+
+        dashboardCrop: {
+            title: "🌱 Crop Health",
+            description: "Monitor crop growth and field observation status."
+        },
+
+        dashboardWeather: {
+            title: "🌧️ Weather",
+            description: "Explore weather conditions and rainfall information."
+        },
+
+        dashboardSatellite: {
+            title: "🛰️ Satellite",
+            description: "Explore satellite monitoring and agricultural land conditions."
+        },
+
+        dashboardAI: {
+            title: "🤖 AI Analysis",
+            description: "Explore AI-powered agricultural analysis and recommendations."
+        },
+
+        map: {
+            title: "🗺️ Farm Monitoring Map",
+            description: "Explore agricultural land monitoring and satellite map information."
+        }
+
+    };
+
+    const item = features[feature];
+
+    if (!item) {
+        alert("Feature not found!");
+        return;
+    }
+
+    const oldPopup = document.getElementById("featurePopup");
+
+    if (oldPopup) {
+        oldPopup.remove();
+    }
+
+    const popup = document.createElement("div");
+
+    popup.id = "featurePopup";
+
+    popup.style.cssText = `
+        position: fixed;
+        inset: 0;
+        background: rgba(0,0,0,0.75);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        z-index: 99999;
+        padding: 20px;
+    `;
+
+    popup.innerHTML = `
+        <div style="
+            background:white;
+            color:#222;
+            padding:30px;
+            border-radius:16px;
+            width:400px;
+            max-width:100%;
+        ">
+
+            <h2>${item.title}</h2>
+
+            <p style="margin:15px 0;line-height:1.5">
+                ${item.description}
+            </p>
+
+            <button id="closePopup" style="
+                background:#16a34a;
+                color:white;
+                border:0;
+                padding:12px 25px;
+                border-radius:8px;
+                cursor:pointer;
+            ">Close</button>
+
+        </div>
+    `;
+
+    document.body.appendChild(popup);
+
+    document.getElementById("closePopup").onclick = function() {
+        popup.remove();
+    };
+
+}
+
  
 </script>
 
