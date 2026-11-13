@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | Live Satellite Insights</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:Arial,sans-serif}
+body{background:#07140e;color:white}
+.navbar{height:65px;background:#102d20;display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid #34533d}
+.logo{color:#9de5ad;font-size:19px;font-weight:bold}
+.back{background:#244b34;color:white;text-decoration:none;padding:10px 15px;border-radius:8px}
+.header{padding:22px}
+.header h1{color:#9de5ad;font-size:27px;margin-bottom:8px}
+.header p{color:#b7cabb;font-size:13px;line-height:1.5}
+.status{display:inline-block;margin-top:12px;padding:7px 12px;background:#1c4930;color:#a5f1b7;border-radius:20px;font-size:12px}
+.layout{display:grid;grid-template-columns:230px 1fr 270px;gap:13px;padding:0 15px 20px}
+.panel{background:#10251b;border:1px solid #2d5038;border-radius:12px;padding:15px;min-width:0}
+.panel h3{font-size:15px;color:#a3e8b2;margin-bottom:14px}
+select{width:100%;padding:11px;background:#193626;color:white;border:1px solid #42634b;border-radius:7px;margin-bottom:15px}
+.btn{width:100%;padding:12px;margin-bottom:9px;text-align:left;border:1px solid #355b40;background:#193626;color:white;border-radius:8px;cursor:pointer;font-size:13px}
+.btn:hover,.btn.active{background:#286440;border-color:#91dfa1}
+.gps{background:#236a43;border:1px solid #75cf91;font-weight:bold;text-align:center}
+.stop{background:#5b2925;border-color:#a75c52;text-align:center}
+#map{height:570px;width:100%;border-radius:12px}
+.map-wrap{position:relative;min-width:0}
+.map-tag{position:absolute;z-index:500;top:12px;left:55px;background:#07140eea;padding:10px;border-radius:7px;font-size:11px;color:#b8efc6;pointer-events:none}
+.coordinates{position:absolute;z-index:500;bottom:12px;left:12px;background:#07140eea;padding:10px;border-radius:7px;font-size:11px;pointer-events:none}
+.metric{padding:12px;background:#193626;border-radius:9px;margin-bottom:10px;border:1px solid #35543e}
+.metric small{display:block;color:#b4c9b9;font-size:12px;margin-bottom:7px}
+.metric strong{font-size:22px;color:#9ee9ae}
+.metric span{display:block;font-size:10px;color:#b1c2b6;margin-top:5px}
+.note{background:#45391c;color:#ffdb8a;padding:11px;border-radius:8px;font-size:11px;line-height:1.5;margin-top:12px}
+.info{background:#193626;padding:12px;border-radius:8px;margin-top:12px;font-size:12px;line-height:1.7;color:#c2d4c7}
+#gpsStatus{font-size:11px;color:#a5e8b5;margin:8px 0 14px;line-height:1.5}
+.footer{text-align:center;padding:20px;color:#91a99a;font-size:11px}
+@media(max-width:1000px){
+.layout{grid-template-columns:200px 1fr}
+.right{grid-column:1/-1;display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.right h3,.right .note,.right .info{grid-column:1/-1}
+}
+@media(max-width:650px){
+.layout{display:flex;flex-direction:column;padding:0 10px 15px}
+.header{padding:17px}
+.header h1{font-size:23px}
+.map-wrap{order:1}
+#map{height:400px}
+.left{order:2}
+.right{order:3;display:block}
+}
+</style>
+</head>
+
+<body>
+
+<nav class="navbar">
+<div class="logo">🌿 FarmShift AI</div>
+<a class="back" href="/">← Back</a>
+</nav>
+
+<header class="header">
+<h1>🛰️ Live Satellite Insights</h1>
+<p>Explore your current farm location using satellite imagery and NASA Earth observation data.</p>
+<div class="status" id="mainStatus">● Waiting for GPS location</div>
+</header>
+
+<main class="layout">
+
+<!-- LEFT PANEL -->
+<section class="panel left">
+<h3>📍 Live Location</h3>
+
+<button class="btn gps" onclick="startGPS()">
+📍 Use My Live Location
+</button>
+
+<button class="btn stop" onclick="stopGPS()">
+Stop Live Tracking
+</button>
+
+<div id="gpsStatus">GPS not started. Allow location permission when requested.</div>
+
+<h3>🌍 Quick Locations</h3>
+
+<select id="locationSelect" onchange="selectCity()">
+<option value="">Select District</option>
+<option value="erode">Erode</option>
+<option value="salem">Salem</option>
+<option value="namakkal">Namakkal</option>
+</select>
+
+<h3>🛰️ Satellite Layers</h3>
+
+<button class="btn active" onclick="changeLayer('base',this)">
+🌎 Satellite Imagery
+</button>
+
+<button class="btn" onclick="changeLayer('ndvi',this)">
+🌿 NASA NDVI
+</button>
+
+<button class="btn" onclick="changeLayer('lst',this)">
+🌡️ NASA Land Temperature
+</button>
+
+<div class="info">
+<b>Map controls</b><br>
+• Zoom in / out<br>
+• Click anywhere to inspect coordinates<br>
+• GPS tracks your current position
+</div>
+</section>
+
+<!-- MAP -->
+<section class="map-wrap">
+
+<div class="map-tag">🛰️ EARTH OBSERVATION MAP</div>
+
+<div id="map"></div>
+
+<div class="coordinates" id="coordinates">
+Waiting for location...
+</div>
+
+</section>
+
+<!-- RIGHT PANEL -->
+<section class="panel right">
+
+<h3>📊 Location Analysis</h3>
+
+<div class="metric">
+<small>🌡️ NASA POWER Temperature</small>
+<strong id="temperature">--</strong>
+<span id="tempDate">Waiting for data</span>
+</div>
+
+<div class="metric">
+<small>🌧️ NASA POWER Precipitation</small>
+<strong id="rainfall">--</strong>
+<span id="rainDate">Waiting for data</span>
+</div>
+
+<div class="metric">
+<small>🌿 NASA NDVI Layer</small>
+<strong id="ndviStatus">--</strong>
+<span id="ndviInfo">Select NASA NDVI layer on map</span>
+</div>
+
+<div class="metric">
+<small>🌡️ Land Surface Temperature</small>
+<strong id="lstStatus">--</strong>
+<span id="lstInfo">Select NASA LST layer on map</span>
+</div>
+
+<div class="metric">
+<small>💧 Soil Moisture</small>
+<strong>Not connected</strong>
+<span>Live soil moisture API integration pending</span>
+</div>
+
+<div class="info">
+<b>Selected Coordinates</b>
+<div id="selectedLocation">Not selected</div>
+</div>
+
+<div class="info">
+<b>Data Sources</b><br>
+NASA GIBS – Satellite imagery<br>
+NASA POWER – Weather parameters<br>
+Esri – Satellite base map
+</div>
+
+<div class="note">
+⚠ NASA imagery and weather data have different observation dates and resolutions. NASA POWER temperature is air temperature, not land surface temperature. Soil moisture is not yet integrated.
+</div>
+
+</section>
+</main>
+
+<footer class="footer">
+FarmShift AI © 2026 | Earth Observation System
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+// MAP INITIALIZATION
+
+const map = L.map("map").setView([11.2,77.8],9);
+
+const base = L.tileLayer(
+"https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+{
+maxZoom:19,
+attribution:"Tiles © Esri"
+}
+).addTo(map);
+
+
+// NASA GIBS LAYERS
+
+function getPastDate(days) {
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate()-days);
+    return d.toISOString().slice(0,10);
+}
+
+const ndviDate = getPastDate(20);
+const lstDate = getPastDate(10);
+
+const ndviLayer = L.tileLayer(
+"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_NDVI_8Day/default/" +
+ndviDate +
+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png",
+{
+maxNativeZoom:9,
+maxZoom:19,
+opacity:0.75,
+attribution:"NASA GIBS"
+}
+);
+
+const lstLayer = L.tileLayer(
+"https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Land_Surface_Temp_Day/default/" +
+lstDate +
+"/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png",
+{
+maxNativeZoom:9,
+maxZoom:19,
+opacity:0.75,
+attribution:"NASA GIBS"
+}
+);
+
+
+// MARKER
+
+let marker = L.marker([11.2,77.8]).addTo(map);
+
+let activeLayer = base;
+let gpsWatch = null;
+let lastDataLocation = null;
+
+const cities = {
+erode:[11.3410,77.7172],
+salem:[11.6643,78.1460],
+namakkal:[11.2189,78.1677]
+};
+
+
+// CHANGE SATELLITE LAYER
+
+function changeLayer(type,button) {
+
+    if(activeLayer) {
+        map.removeLayer(activeLayer);
+    }
+
+    document.querySelectorAll(".left .btn")
+    .forEach(b=>b.classList.remove("active"));
+
+    button.classList.add("active");
+
+    if(type==="base") {
+        activeLayer=base;
+        document.getElementById("mainStatus").innerText="● Satellite imagery view";
+    }
+
+    if(type==="ndvi") {
+        activeLayer=ndviLayer;
+        document.getElementById("mainStatus").innerText="● NASA NDVI layer – "+ndviDate;
+        document.getElementById("ndviStatus").innerText="Overlay selected";
+        document.getElementById("ndviInfo").innerText="MODIS Terra 8-day NDVI imagery";
+    }
+
+    if(type==="lst") {
+        activeLayer=lstLayer;
+        document.getElementById("mainStatus").innerText="● NASA LST layer – "+lstDate;
+        document.getElementById("lstStatus").innerText="Overlay selected";
+        document.getElementById("lstInfo").innerText="MODIS Terra daytime LST imagery";
+    }
+
+    activeLayer.addTo(map);
+
+    activeLayer.once("tileerror",function(){
+        document.getElementById("mainStatus").innerText=
+        "⚠ Selected NASA imagery may be unavailable for this date or zoom.";
+    });
+
+}
+
+
+// UPDATE LOCATION
+
+function updateLocation(lat,lng,label) {
+
+    marker.setLatLng([lat,lng]);
+
+    marker.bindPopup(
+        "<b>"+label+"</b><br>"+
+        "Latitude: "+lat.toFixed(5)+"<br>"+
+        "Longitude: "+lng.toFixed(5)
+    ).openPopup();
+
+    document.getElementById("coordinates").innerText=
+    "Lat: "+lat.toFixed(5)+" | Lon: "+lng.toFixed(5);
+
+    document.getElementById("selectedLocation").innerText=
+    label+" | "+lat.toFixed(5)+", "+lng.toFixed(5);
+
+}
+
+
+// GPS START
+
+function startGPS() {
+
+    if(!navigator.geolocation) {
+        alert("GPS is not supported by this browser.");
+        return;
+    }
+
+    if(gpsWatch !== null) return;
+
+    document.getElementById("gpsStatus").innerText=
+    "Requesting GPS permission...";
+
+    gpsWatch=navigator.geolocation.watchPosition(
+
+        function(position) {
+
+            const lat=position.coords.latitude;
+            const lng=position.coords.longitude;
+
+            map.setView([lat,lng],16);
+
+            updateLocation(lat,lng,"Your Live Location");
+
+            document.getElementById("gpsStatus").innerText=
+            "● GPS active | Accuracy: "+
+            Math.round(position.coords.accuracy)+" metres";
+
+            document.getElementById("mainStatus").innerText=
+            "● Live GPS connected";
+
+            // Fetch data only when moved significantly
+
+            if(!lastDataLocation ||
+               map.distance(
+               [lastDataLocation.lat,lastDataLocation.lng],
+               [lat,lng]
+               )>1000) {
+
+                lastDataLocation={lat,lng};
+                fetchNASAData(lat,lng);
+            }
+
+        },
+
+        function(error) {
+
+            let msg="Unable to get location.";
+
+            if(error.code===1) msg="Location permission denied.";
+            if(error.code===2) msg="Location position unavailable.";
+            if(error.code===3) msg="GPS request timed out.";
+
+            document.getElementById("gpsStatus").innerText=msg;
+            document.getElementById("mainStatus").innerText="⚠ GPS unavailable";
+
+            gpsWatch=null;
+
+        },
+
+        {
+            enableHighAccuracy:true,
+            maximumAge:10000,
+            timeout:20000
+        }
+
+    );
+
+}
+
+
+// GPS STOP
+
+function stopGPS() {
+
+    if(gpsWatch!==null) {
+        navigator.geolocation.clearWatch(gpsWatch);
+        gpsWatch=null;
+    }
+
+    document.getElementById("gpsStatus").innerText=
+    "Live GPS tracking stopped.";
+
+    document.getElementById("mainStatus").innerText=
+    "● GPS tracking stopped";
+}
+
+
+// DISTRICT SELECT
+
+function selectCity() {
+
+    const value=document.getElementById("locationSelect").value;
+
+    if(!cities[value]) return;
+
+    const [lat,lng]=cities[value];
+
+    map.flyTo([lat,lng],13);
+
+    updateLocation(lat,lng,value.toUpperCase());
+
+    lastDataLocation={lat,lng};
+
+    fetchNASAData(lat,lng);
+}
+
+
+// MAP CLICK TO SELECT FARM
+
+map.on("click",function(e) {
+
+    const lat=e.latlng.lat;
+    const lng=e.latlng.lng;
+
+    updateLocation(lat,lng,"Selected Farm Area");
+
+    lastDataLocation={lat,lng};
+
+    fetchNASAData(lat,lng);
+
+});
+
+
+// NASA POWER API
+
+async function fetchNASAData(lat,lng) {
+
+    document.getElementById("temperature").innerText="Loading...";
+    document.getElementById("rainfall").innerText="Loading...";
+
+    try {
+
+        const now=new Date();
+
+        const end=new Date(now);
+        end.setUTCDate(end.getUTCDate()-3);
+
+        const start=new Date(end);
+        start.setUTCDate(start.getUTCDate()-7);
+
+        const formatDate=d=>d.toISOString().slice(0,10).replace(/-/g,"");
+
+        const startDate=formatDate(start);
+        const endDate=formatDate(end);
+
+        const url=
+        "https://power.larc.nasa.gov/api/temporal/daily/point"+
+        "?parameters=T2M,PRECTOTCORR"+
+        "&community=AG"+
+        "&longitude="+lng+
+        "&latitude="+lat+
+        "&start="+startDate+
+        "&end="+endDate+
+        "&format=JSON";
+
+        const response=await fetch(url);
+
+        if(!response.ok) throw new Error("NASA API unavailable");
+
+        const data=await response.json();
+
+        const parameters=data.properties.parameter;
+
+        const temperatureValues=parameters.T2M;
+        const rainfallValues=parameters.PRECTOTCORR;
+
+        function latestValid(values) {
+            const keys=Object.keys(values).sort().reverse();
+
+            for(const key of keys) {
+                const value=Number(values[key]);
+
+                if(Number.isFinite(value) && value!==-999) {
+                    return {value,key};
+                }
+            }
+
+            return null;
+        }
+
+        const temp=latestValid(temperatureValues);
+        const rain=latestValid(rainfallValues);
+
+        if(temp) {
+            document.getElementById("temperature").innerText=
+            temp.value.toFixed(1)+" °C";
+
+            document.getElementById("tempDate").innerText=
+            "NASA POWER | "+temp.key;
+        } else {
+            document.getElementById("temperature").innerText="N/A";
+        }
+
+        if(rain) {
+            document.getElementById("rainfall").innerText=
+            rain.value.toFixed(1)+" mm/day";
+
+            document.getElementById("rainDate").innerText=
+            "NASA POWER | "+rain.key;
+        } else {
+            document.getElementById("rainfall").innerText="N/A";
+        }
+
+    }
+
+    catch(error) {
+
+        document.getElementById("temperature").innerText="Unavailable";
+        document.getElementById("rainfall").innerText="Unavailable";
+
+        document.getElementById("tempDate").innerText=
+        "NASA API could not return data.";
+
+        document.getElementById("rainDate").innerText=
+        "Please try again later.";
+
+        console.error("NASA API:",error);
+
+    }
+
+}
+
+</script>
+
+</body>
+</html>
