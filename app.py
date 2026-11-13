@@ -256,8 +256,8 @@ def satellite():
     return render_template('satellite.html')
 
 
-@app.route('/weather')
-def weather():
+@app.route('/weather-dashboard')
+def weather_dashboard():
     return render_template('weather.html')
 
 
