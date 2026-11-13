@@ -7,12 +7,12 @@ import {
 
 // Replace with your Firebase project configuration
 const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "YOUR_PROJECT.firebaseapp.com",
-    projectId: "YOUR_PROJECT_ID",
-    storageBucket: "YOUR_PROJECT.firebasestorage.app",
-    messagingSenderId: "YOUR_SENDER_ID",
-    appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBZgf92RYgXlbD8BsD2QV7psrfsBPUsogU",
+  authDomain: "farmshift-ai.firebaseapp.com",
+  projectId: "farmshift-ai",
+  storageBucket: "farmshift-ai.firebasestorage.app",
+  messagingSenderId: "760961979434",
+  appId: "1:760961979434:web:7c5fab125e076788959f53"
 };
 
 // Initialize Firebase
