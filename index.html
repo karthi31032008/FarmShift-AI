@@ -607,100 +607,190 @@ function showFeature(feature) {
  }
 
 
+
 function showFeature(feature) {
-
     const features = {
-
+        satellite: {
+            icon: "🛰️",
+            title: "Satellite Insights",
+            description: "Satellite-based agricultural insights.",
+            details: [
+                "Monitor land and field conditions.",
+                "Observe vegetation changes.",
+                "Support better farming decisions."
+            ]
+        },
+        weather: {
+            icon: "🌦️",
+            title: "Weather Monitoring",
+            description: "Weather information for farming.",
+            details: [
+                "Monitor temperature.",
+                "Check rainfall conditions.",
+                "Understand weather changes."
+            ]
+        },
+        crop: {
+            icon: "🌱",
+            title: "Crop Monitoring",
+            description: "Monitor crop growth and field conditions.",
+            details: [
+                "Track crop growth.",
+                "Identify possible crop problems.",
+                "Improve crop management."
+            ]
+        },
+        ai: {
+            icon: "🤖",
+            title: "AI Recommendations",
+            description: "AI-based farming recommendations.",
+            details: [
+                "Get crop-related suggestions.",
+                "Receive soil-based guidance.",
+                "Support farming decisions."
+            ]
+        },
+        water: {
+            icon: "💧",
+            title: "Water Awareness",
+            description: "Understand water availability and usage.",
+            details: [
+                "Monitor water requirements.",
+                "Understand irrigation needs.",
+                "Encourage water conservation."
+            ]
+        },
+        climate: {
+            icon: "🌍",
+            title: "Climate Insights",
+            description: "Understand climate conditions affecting agriculture.",
+            details: [
+                "Monitor climate changes.",
+                "Understand environmental conditions.",
+                "Support climate-aware farming."
+            ]
+        },
         dashboardCrop: {
-            title: "🌱 Crop Health",
-            description: "Monitor crop growth and field observation status."
+            icon: "🌾",
+            title: "Crop Dashboard",
+            description: "Crop monitoring overview.",
+            details: ["View crop information.", "Monitor field conditions."]
         },
-
         dashboardWeather: {
-            title: "🌧️ Weather",
-            description: "Explore weather conditions and rainfall information."
+            icon: "🌤️",
+            title: "Weather Dashboard",
+            description: "Weather monitoring overview.",
+            details: ["View weather conditions.", "Monitor rainfall and temperature."]
         },
-
         dashboardSatellite: {
-            title: "🛰️ Satellite",
-            description: "Explore satellite monitoring and agricultural land conditions."
+            icon: "🛰️",
+            title: "Satellite Dashboard",
+            description: "Satellite monitoring overview.",
+            details: ["View satellite insights.", "Observe field changes."]
         },
-
         dashboardAI: {
-            title: "🤖 AI Analysis",
-            description: "Explore AI-powered agricultural analysis and recommendations."
+            icon: "🤖",
+            title: "AI Dashboard",
+            description: "AI farming assistance.",
+            details: ["View AI recommendations.", "Get farming guidance."]
         },
-
         map: {
-            title: "🗺️ Farm Monitoring Map",
-            description: "Explore agricultural land monitoring and satellite map information."
+            icon: "🗺️",
+            title: "Farm Map",
+            description: "Farm location and map information.",
+            details: ["View farm locations.", "Explore field information."]
         }
-
     };
 
-    const item = features[feature];
+    const data = features[feature];
 
-    if (!item) {
-        alert("Feature not found!");
-        return;
-    }
+    if (!data) return;
 
-    const oldPopup = document.getElementById("featurePopup");
+    const oldModal = document.getElementById("featureModal");
+    if (oldModal) oldModal.remove();
 
-    if (oldPopup) {
-        oldPopup.remove();
-    }
+    const modal = document.createElement("div");
+    modal.id = "featureModal";
 
-    const popup = document.createElement("div");
-
-    popup.id = "featurePopup";
-
-    popup.style.cssText = `
+    modal.style.cssText = `
         position: fixed;
         inset: 0;
         background: rgba(0,0,0,0.75);
         display: flex;
-        justify-content: center;
         align-items: center;
-        z-index: 99999;
+        justify-content: center;
+        z-index: 999999;
         padding: 20px;
     `;
 
-    popup.innerHTML = `
+    modal.innerHTML = `
         <div style="
-            background:white;
-            color:#222;
-            padding:30px;
-            border-radius:16px;
-            width:400px;
-            max-width:100%;
+            background: white;
+            color: #183b2b;
+            padding: 30px;
+            border-radius: 18px;
+            width: 100%;
+            max-width: 500px;
+            position: relative;
+            text-align: center;
         ">
+            <button id="closeFeatureModal" style="
+                position: absolute;
+                top: 12px;
+                right: 15px;
+                border: none;
+                background: none;
+                font-size: 26px;
+                cursor: pointer;
+            ">×</button>
 
-            <h2>${item.title}</h2>
+            <div style="font-size: 45px;">${data.icon}</div>
 
-            <p style="margin:15px 0;line-height:1.5">
-                ${item.description}
-            </p>
+            <h2>${data.title}</h2>
 
-            <button id="closePopup" style="
-                background:#16a34a;
-                color:white;
-                border:0;
-                padding:12px 25px;
-                border-radius:8px;
-                cursor:pointer;
+            <p>${data.description}</p>
+
+            <ul style="text-align:left; line-height:2;">
+                ${data.details.map(item => `<li>${item}</li>`).join("")}
+            </ul>
+
+            <button id="doneFeatureModal" style="
+                background: #176b45;
+                color: white;
+                border: none;
+                padding: 12px 30px;
+                border-radius: 8px;
+                cursor: pointer;
+                margin-top: 15px;
             ">Close</button>
-
         </div>
     `;
 
-    document.body.appendChild(popup);
+    document.body.appendChild(modal);
 
-    document.getElementById("closePopup").onclick = function() {
-        popup.remove();
-    };
+    function closeFeature() {
+        modal.remove();
+        document.removeEventListener("keydown", handleEscape);
+    }
 
+    function handleEscape(event) {
+        if (event.key === "Escape") {
+            closeFeature();
+        }
+    }
+
+    document.getElementById("closeFeatureModal").onclick = closeFeature;
+    document.getElementById("doneFeatureModal").onclick = closeFeature;
+
+    modal.addEventListener("click", function(event) {
+        if (event.target === modal) {
+            closeFeature();
+        }
+    });
+
+    document.addEventListener("keydown", handleEscape);
 }
+ 
 
  
 </script>
