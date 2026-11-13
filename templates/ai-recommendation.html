@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | Smart Crop Doctor</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #090b18;
+    color: #f4f3ff;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1100px;
+    margin: auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.logo {
+    color: #b7a0ff;
+    font-size: 23px;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: #9292b5;
+    font-size: 12px;
+    margin-top: 6px;
+}
+
+.status {
+    background: #242044;
+    color: #c5aaff;
+    padding: 10px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.hero {
+    background: linear-gradient(125deg, #292052, #111a35, #102b3e);
+    border: 1px solid #51428c;
+    padding: 28px;
+    border-radius: 22px;
+    margin-bottom: 22px;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero h1 {
+    font-size: 30px;
+    margin-bottom: 12px;
+}
+
+.hero p {
+    color: #d0c9ec;
+    line-height: 1.7;
+    max-width: 650px;
+}
+
+.hero-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.section {
+    background: #121528;
+    border: 1px solid #292d4e;
+    border-radius: 18px;
+    padding: 22px;
+    margin: 18px 0;
+}
+
+.section h2 {
+    color: #c1a8ff;
+    font-size: 19px;
+    margin-bottom: 18px;
+}
+
+label {
+    display: block;
+    color: #c9c6e5;
+    font-size: 13px;
+    margin-top: 15px;
+}
+
+select {
+    width: 100%;
+    padding: 14px;
+    margin-top: 9px;
+    background: #1b2039;
+    color: white;
+    border: 1px solid #48436d;
+    border-radius: 10px;
+    outline: none;
+}
+
+.options {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 12px;
+}
+
+.option {
+    background: #1b2039;
+    border: 1px solid #343957;
+    padding: 15px;
+    border-radius: 12px;
+    cursor: pointer;
+    color: #e4e2fa;
+    font-size: 14px;
+    transition: 0.2s;
+}
+
+.option:hover {
+    border-color: #a88aff;
+}
+
+.option.selected {
+    border: 1px solid #a88aff;
+    background: #30264f;
+    color: #d7c5ff;
+}
+
+button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 11px;
+    background: linear-gradient(100deg, #9874ff, #40c8db);
+    color: #090b18;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+button:hover {
+    opacity: 0.88;
+}
+
+.result {
+    display: none;
+    border: 1px solid #6554a3;
+    background: linear-gradient(145deg, #1b1a36, #142538);
+    border-radius: 18px;
+    padding: 22px;
+    margin-top: 20px;
+}
+
+.result h2 {
+    color: #c8aaff;
+    margin-bottom: 15px;
+}
+
+.result-box {
+    background: #22233e;
+    border-left: 4px solid #a58aff;
+    padding: 16px;
+    border-radius: 9px;
+    margin: 12px 0;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.result-box strong {
+    color: #aeeaff;
+}
+
+.tag {
+    display: inline-block;
+    background: #332b57;
+    color: #d4c2ff;
+    padding: 7px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    margin: 5px 0 12px;
+}
+
+.note {
+    color: #9999b8;
+    font-size: 12px;
+    line-height: 1.6;
+    margin-top: 15px;
+}
+
+footer {
+    text-align: center;
+    color: #8585a5;
+    padding: 25px 5px;
+    font-size: 12px;
+}
+
+.back {
+    display: inline-block;
+    color: #a9dfff;
+    text-decoration: none;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+@media(max-width: 600px) {
+    body { padding: 12px; }
+    .hero h1 { font-size: 24px; }
+    .options { grid-template-columns: 1fr; }
+    .section { padding: 16px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<a class="back" href="/">← Back to Home</a>
+
+<header>
+    <div>
+        <div class="logo">✦ FarmShift AI</div>
+        <div class="subtitle">Intelligent Agriculture Assistant</div>
+    </div>
+    <div class="status">● AI DEMO MODE</div>
+</header>
+
+<div class="hero">
+    <div class="hero-icon">🤖🌿</div>
+    <h1>Smart Crop Doctor</h1>
+    <p>
+        Discover possible crop problems, understand their causes
+        and receive smart farming recommendations through
+        an interactive crop analysis demonstration.
+    </p>
+</div>
+
+<div class="section">
+    <h2>01 / Crop Information</h2>
+
+    <label for="crop">Select your crop</label>
+    <select id="crop">
+        <option value="Rice / நெல்">Rice / நெல்</option>
+        <option value="Maize / மக்காச்சோளம்">Maize / மக்காச்சோளம்</option>
+        <option value="Sugarcane / கரும்பு">Sugarcane / கரும்பு</option>
+        <option value="Cotton / பருத்தி">Cotton / பருத்தி</option>
+        <option value="Turmeric / மஞ்சள்">Turmeric / மஞ்சள்</option>
+        <option value="Groundnut / நிலக்கடலை">Groundnut / நிலக்கடலை</option>
+    </select>
+
+    <label for="stage">Current crop growth stage</label>
+    <select id="stage">
+        <option>Seedling</option>
+        <option selected>Vegetative</option>
+        <option>Flowering</option>
+        <option>Fruiting / Grain filling</option>
+        <option>Maturity</option>
+    </select>
+</div>
+
+<div class="section">
+    <h2>02 / Identify Crop Problem</h2>
+
+    <label>Select the symptom you observe</label>
+
+    <div class="options" id="problemOptions">
+        <div class="option selected" data-value="yellow">
+            🍂 Yellow leaves
+        </div>
+        <div class="option" data-value="slow">
+            🌱 Slow crop growth
+        </div>
+        <div class="option" data-value="moisture">
+            💧 Low soil moisture
+        </div>
+        <div class="option" data-value="pest">
+            🐛 Pest damage symptoms
+        </div>
+        <div class="option" data-value="spots">
+            🍃 Leaf spots
+        </div>
+        <div class="option" data-value="wilting">
+            🥀 Plant wilting
+        </div>
+    </div>
+
+    <label for="severity">Problem severity</label>
+    <select id="severity">
+        <option>Low</option>
+        <option selected>Moderate</option>
+        <option>High</option>
+    </select>
+
+    <button onclick="analyzeCrop()">
+        ✦ Analyse Crop Problem
+    </button>
+</div>
+
+<div class="result" id="result">
+    <span class="tag">✦ DEMO ANALYSIS</span>
+    <h2>AI Crop Analysis Result</h2>
+
+    <div class="result-box">
+        <strong>Selected Crop</strong>
+        <p id="resultCrop"></p>
+    </div>
+
+    <div class="result-box">
+        <strong>Detected Symptom</strong>
+        <p id="resultProblem"></p>
+    </div>
+
+    <div class="result-box">
+        <strong>Possible Causes</strong>
+        <p id="resultCause"></p>
+    </div>
+
+    <div class="result-box">
+        <strong>Recommended Actions</strong>
+        <p id="resultAdvice"></p>
+    </div>
+
+    <div class="result-box">
+        <strong>Priority</strong>
+        <p id="resultPriority"></p>
+    </div>
+
+    <p class="note">
+        This is an educational, rule-based demonstration.
+        It does not confirm a plant disease or replace field inspection,
+        laboratory testing or advice from an agricultural expert.
+    </p>
+
+    <button onclick="resetAnalysis()">
+        ↻ Analyse Another Problem
+    </button>
+</div>
+
+<footer>
+    FarmShift AI © 2026
+    <br><br>
+    Smart Crop Doctor | Agricultural Decision Support Demo
+</footer>
+
+</div>
+
+<script>
+let selectedProblem = "yellow";
+
+const options = document.querySelectorAll(".option");
+
+options.forEach(function(option) {
+    option.addEventListener("click", function() {
+        options.forEach(function(item) {
+            item.classList.remove("selected");
+        });
+
+        option.classList.add("selected");
+        selectedProblem = option.dataset.value;
+    });
+});
+
+const analysisData = {
+    yellow: {
+        name: "Yellow leaves",
+        cause: "Possible nutrient deficiency, water stress, root problems or disease. Leaf yellowing alone cannot identify the exact cause.",
+        advice: "Inspect which leaves are affected, check soil moisture and drainage, and arrange a soil test before applying fertilizer.",
+    },
+
+    slow: {
+        name: "Slow crop growth",
+        cause: "Possible nutrient imbalance, unsuitable growing conditions, water stress or root damage.",
+        advice: "Check crop spacing, soil condition, irrigation and nutrient availability. Compare plant growth with the expected growth stage.",
+    },
+
+    moisture: {
+        name: "Low soil moisture",
+        cause: "The root zone may not be receiving enough water due to insufficient irrigation or high water loss.",
+        advice: "Check root-zone moisture and soil condition. Irrigate according to crop stage and local water requirements.",
+    },
+
+    pest: {
+        name: "Pest damage symptoms",
+        cause: "Insect feeding may be causing holes, damaged leaves or unusual plant appearance.",
+        advice: "Inspect affected plants, identify the pest and assess the extent of damage. Choose suitable integrated pest management measures.",
+    },
+
+    spots: {
+        name: "Leaf spots",
+        cause: "Leaf spots may be associated with fungal or bacterial disease, insects or environmental stress.",
+        advice: "Inspect affected leaves, note whether spots are spreading and seek local agricultural expert advice for identification.",
+    },
+
+    wilting: {
+        name: "Plant wilting",
+        cause: "Possible water stress, root damage, waterlogging or vascular disease.",
+        advice: "Check soil moisture and drainage, inspect roots and compare affected plants with healthy plants before deciding on treatment.",
+    }
+};
+
+function analyzeCrop() {
+    const crop = document.getElementById("crop").value;
+    const stage = document.getElementById("stage").value;
+    const severity = document.getElementById("severity").value;
+
+    const data = analysisData[selectedProblem];
+
+    let priority = "Routine monitoring";
+
+    if (severity === "High") {
+        priority = "High priority – inspect the crop promptly";
+    } else if (severity === "Moderate") {
+        priority = "Medium priority – investigate the symptoms";
+    }
+
+    document.getElementById("resultCrop").textContent =
+        crop + " | Growth stage: " + stage;
+
+    document.getElementById("resultProblem").textContent =
+        data.name + " | Severity: " + severity;
+
+    document.getElementById("resultCause").textContent =
+        data.cause;
+
+    document.getElementById("resultAdvice").textContent =
+        data.advice;
+
+    document.getElementById("resultPriority").textContent =
+        priority;
+
+    const result = document.getElementById("result");
+
+    result.style.display = "block";
+
+    result.scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+    });
+}
+
+function resetAnalysis() {
+    document.getElementById("result").style.display = "none";
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
+}
+</script>
+
+</body>
+  </html>
+  
