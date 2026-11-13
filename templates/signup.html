@@ -169,5 +169,41 @@
     © 2026 FarmShift-AI
 </footer>
 
+<script type="module">
+import { auth } from "{{ url_for('static', filename='auth.js') }}";
+
+import {
+    createUserWithEmailAndPassword,
+    updateProfile
+} from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
+
+const form = document.querySelector("form");
+
+form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const name = form.querySelector('[name="name"]').value;
+    const email = form.querySelector('[name="email"]').value;
+    const password = form.querySelector('[name="password"]').value;
+
+    try {
+        const result = await createUserWithEmailAndPassword(
+            auth, email, password
+        );
+
+        await updateProfile(result.user, {
+            displayName: name
+        });
+
+        alert("Account created successfully!");
+
+        window.location.href = "/dashboard";
+
+    } catch (error) {
+        alert(error.message);
+    }
+});
+</script>
+    
 </body>
 </html>
