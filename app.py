@@ -2,6 +2,7 @@
 import os
 import requests
 import firebase_admin
+from datetime import datetime, timedelta
 
 from flask import (
     Flask, request, jsonify, send_from_directory,
@@ -188,7 +189,67 @@ def weather():
 
     response = requests.get(url, params=params, timeout=15)
     return jsonify(response.json())
+# NASA POWER WEATHER DATA API
+@app.route("/api/nasa-weather")
+def nasa_weather():
 
+    latitude = request.args.get("lat", "11.6643")
+    longitude = request.args.get("lon", "78.1460")
+
+    try:
+        latitude = float(latitude)
+        longitude = float(longitude)
+
+        if not (-90 <= latitude <= 90):
+            return jsonify({"error": "Invalid latitude"}), 400
+
+        if not (-180 <= longitude <= 180):
+            return jsonify({"error": "Invalid longitude"}), 400
+
+        end_date = datetime.utcnow().date() - timedelta(days=1)
+        start_date = end_date - timedelta(days=6)
+
+        url = "https://power.larc.nasa.gov/api/temporal/daily/point"
+
+        params = {
+            "parameters": "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,RH2M,WS2M",
+            "community": "AG",
+            "longitude": longitude,
+            "latitude": latitude,
+            "start": start_date.strftime("%Y%m%d"),
+            "end": end_date.strftime("%Y%m%d"),
+            "format": "JSON"
+        }
+
+        response = requests.get(
+            url,
+            params=params,
+            timeout=30
+        )
+
+        response.raise_for_status()
+
+        nasa_data = response.json()
+
+        weather_data = nasa_data["properties"]["parameter"]
+
+        return jsonify({
+            "status": "success",
+            "source": "NASA POWER",
+            "latitude": latitude,
+            "longitude": longitude,
+            "data": weather_data
+        })
+
+    except requests.RequestException:
+        return jsonify({
+            "error": "NASA service unavailable"
+        }), 503
+
+    except (ValueError, KeyError, TypeError):
+        return jsonify({
+            "error": "Unable to process NASA data"
+        }), 500
 
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
