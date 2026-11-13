@@ -209,6 +209,7 @@
 <footer>
     © 2026 FarmShift-AI | Smart Farming Solutions
 </footer>
+
 <script type="module">
 import {
     auth,
@@ -220,12 +221,34 @@ import {
     signInWithPopup
 } from "https://www.gstatic.com/firebasejs/11.0.1/firebase-auth.js";
 
+// Send Firebase token to Flask and create session
+async function createFlaskSession(user) {
+    const token = await user.getIdToken();
+
+    const response = await fetch("/api/auth/session", {
+        method: "POST",
+        headers: {
+            "Authorization": "Bearer " + token,
+            "Content-Type": "application/json"
+        }
+    });
+
+    const data = await response.json();
+
+    if (!response.ok) {
+        throw new Error(data.error || "Session creation failed");
+    }
+
+    window.location.href = "/dashboard";
+}
+
+// Email and Password Login
 const form = document.querySelector("form");
 
 form.addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const email = form.querySelector('[name="email"]').value;
+    const email = form.querySelector('[name="email"]').value.trim();
     const password = form.querySelector('[name="password"]').value;
 
     try {
@@ -233,21 +256,25 @@ form.addEventListener("submit", async (e) => {
             auth, email, password
         );
 
-        window.location.href = "/dashboard";
+        await createFlaskSession(result.user);
 
     } catch (error) {
         alert(error.message);
     }
 });
 
+// Google Login
 document.querySelector(".google-btn").addEventListener("click", async () => {
     try {
-        await signInWithPopup(auth, googleProvider);
-        window.location.href = "/dashboard";
+        const result = await signInWithPopup(auth, googleProvider);
+
+        await createFlaskSession(result.user);
+
     } catch (error) {
         alert(error.message);
     }
 });
 </script>
+    
 </body>
 </html>
