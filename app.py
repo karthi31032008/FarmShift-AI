@@ -265,6 +265,12 @@ def crop():
     return render_template('crop.html')
 
 
+@app.route('/ai-recommendation')
+def ai_recommendation():
+    return render_template('ai-recommendation.html')
+    
+
+
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
