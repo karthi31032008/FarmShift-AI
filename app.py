@@ -24,11 +24,11 @@ if not firebase_admin._apps:
 db = firestore.client()
 
 
-# HOME - Login page
+# HOME - Directly open FarmShift AI website
 @app.route("/")
-@app.route("/login", methods=["GET"])
-def login():
-    return render_template("login.html")
+def home():
+    return send_from_directory(".", "index.html")
+
 
 
 # SIGNUP PAGE
@@ -110,20 +110,15 @@ def create_session():
         return jsonify({"error": "Invalid token"}), 401
 
 
-# DASHBOARD - LOGIN REQUIRED
 @app.route("/dashboard")
 def dashboard():
-    if "uid" not in session:
-        return redirect(url_for("login"))
-
     return send_from_directory(".", "index.html")
 
 
-# LOGOUT
 @app.route("/logout")
 def logout():
     session.clear()
-    return redirect(url_for("login"))
+    return redirect("/")
 
 
 # CROP ANALYSIS API
