@@ -254,11 +254,15 @@ def nasa_weather():
 @app.route('/satellite')
 def satellite():
     return render_template('satellite.html')
-
-
+    
 @app.route('/weather-dashboard')
 def weather_dashboard():
     return render_template('weather.html')
+
+
+@app.route('/crop')
+def crop():
+    return render_template('crop.html')
 
 
 # START SERVER - ALWAYS KEEP THIS AT THE END
