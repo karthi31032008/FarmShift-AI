@@ -1,0 +1,599 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Water Awareness | FarmShift AI</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+    scroll-behavior: smooth;
+}
+
+body {
+    background: #f5f9f8;
+    color: #173b3b;
+}
+
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 6%;
+    background: #082e36;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.logo {
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.logo span {
+    color: #63e6a5;
+}
+
+nav a {
+    text-decoration: none;
+    color: #e5f5f1;
+    margin-left: 22px;
+    font-size: 14px;
+}
+
+nav a:hover {
+    color: #63e6a5;
+}
+
+.hero {
+    min-height: 500px;
+    display: flex;
+    align-items: center;
+    padding: 70px 7%;
+    background:
+    linear-gradient(90deg,rgba(3,29,32,.88),rgba(3,29,32,.2)),
+    url("https://images.unsplash.com/photo-1470252649378-9c29740c9fa8?w=1800")
+    center/cover;
+    color: white;
+}
+
+.hero-content {
+    max-width: 650px;
+}
+
+.hero h1 {
+    font-size: clamp(38px,6vw,68px);
+    line-height: 1.13;
+    margin-bottom: 22px;
+}
+
+.hero h1 span {
+    color: #75edb1;
+}
+
+.hero p {
+    font-size: 17px;
+    line-height: 1.8;
+    color: #e4f1ed;
+}
+
+.hero button {
+    margin-top: 28px;
+    padding: 15px 27px;
+    background: #64e5a1;
+    color: #073b30;
+    border: none;
+    border-radius: 5px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.section {
+    padding: 75px 7%;
+}
+
+.heading {
+    font-size: 32px;
+    margin-bottom: 15px;
+    color: #103d3c;
+}
+
+.subtitle {
+    color: #667d79;
+    line-height: 1.8;
+    max-width: 750px;
+    margin-bottom: 35px;
+}
+
+.intro {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    align-items: center;
+}
+
+.intro img {
+    width: 100%;
+    height: 340px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.intro p {
+    line-height: 1.9;
+    color: #526b66;
+    margin-top: 15px;
+}
+
+.dark-section {
+    background: #0a343b;
+    color: white;
+}
+
+.dark-section .heading {
+    color: white;
+}
+
+.dark-section .subtitle {
+    color: #c4d9d5;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+    gap: 23px;
+}
+
+.card {
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0,0,0,.07);
+    transition: .3s;
+}
+
+.card:hover {
+    transform: translateY(-6px);
+}
+
+.card img {
+    width: 100%;
+    height: 190px;
+    object-fit: cover;
+}
+
+.card-content {
+    padding: 23px;
+}
+
+.card h3 {
+    color: #12544a;
+    margin-bottom: 12px;
+}
+
+.card p {
+    color: #657975;
+    line-height: 1.8;
+    font-size: 14px;
+}
+
+.dark-card {
+    background: #12454b;
+    border: 1px solid #28666a;
+}
+
+.dark-card h3 {
+    color: #78e6b2;
+}
+
+.dark-card p {
+    color: #d1e6df;
+}
+
+.info-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 35px;
+    align-items: center;
+    margin-bottom: 55px;
+}
+
+.info-row img {
+    width: 100%;
+    height: 310px;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+.info-row h3 {
+    font-size: 25px;
+    margin-bottom: 15px;
+}
+
+.info-row p {
+    line-height: 1.9;
+    color: #c7dcd7;
+}
+
+.tips {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(230px,1fr));
+    gap: 20px;
+}
+
+.tip {
+    background: white;
+    padding: 25px;
+    border-left: 4px solid #36ad81;
+    border-radius: 7px;
+}
+
+.tip h3 {
+    margin: 12px 0;
+    color: #155548;
+}
+
+.tip p {
+    color: #657975;
+    line-height: 1.7;
+    font-size: 14px;
+}
+
+.tip-icon {
+    font-size: 32px;
+}
+
+.ai-box {
+    background: linear-gradient(120deg,#0b4944,#116b57);
+    color: white;
+    padding: 45px;
+    border-radius: 14px;
+}
+
+.ai-box h2 {
+    color: #85f0b8;
+    margin-bottom: 18px;
+}
+
+.ai-box p {
+    line-height: 1.9;
+    color: #e0f1e9;
+}
+
+.ai-box ul {
+    margin: 20px 0 0 20px;
+    line-height: 2.2;
+}
+
+footer {
+    background: #062a32;
+    padding: 35px;
+    color: #c4d9d5;
+    text-align: center;
+    line-height: 1.9;
+}
+
+@media(max-width:750px) {
+    .intro,
+    .info-row {
+        grid-template-columns: 1fr;
+    }
+
+    nav {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    nav a {
+        margin: 10px 12px 0 0;
+        display: inline-block;
+    }
+
+    .section {
+        padding: 50px 6%;
+    }
+
+    .hero {
+        min-height: 440px;
+    }
+
+    .ai-box {
+        padding: 28px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<nav>
+    <div class="logo">FarmShift <span>AI</span></div>
+
+    <div>
+        <a href="index.html">Home</a>
+        <a href="index.html">Crop Monitoring</a>
+        <a href="#awareness">Water Awareness</a>
+        <a href="#conservation">Conservation</a>
+    </div>
+</nav>
+
+<!-- HERO -->
+
+<section class="hero">
+    <div class="hero-content">
+        <h1>Water is Life.<br>
+        <span>Save Every Drop.</span></h1>
+
+        <p>
+        Water is the foundation of agriculture and
+        sustainable living. Protect our water resources
+        today for a greener tomorrow.
+        </p>
+
+        <button onclick="document.getElementById('awareness').scrollIntoView()">
+            Explore Water Awareness →
+        </button>
+    </div>
+</section>
+
+<!-- INTRODUCTION -->
+
+<section class="section" id="awareness">
+
+    <div class="intro">
+
+        <div>
+            <h2 class="heading">Why Water Awareness Matters</h2>
+
+            <p class="subtitle">
+                Water conservation is essential for protecting
+                nature, supporting farmers and ensuring
+                resources for future generations.
+            </p>
+
+            <p>
+                Agriculture depends heavily on water.
+                Improper irrigation, groundwater overuse
+                and changing rainfall patterns can affect
+                farming and water availability.
+            </p>
+
+            <p>
+                Understanding water usage and adopting
+                responsible practices can help reduce
+                unnecessary wastage.
+            </p>
+        </div>
+
+        <img
+        src="https://images.unsplash.com/photo-1437482078695-73f5ca6c96e2?w=1000"
+        alt="Natural freshwater landscape">
+    </div>
+</section>
+
+<!-- WATER CHALLENGES -->
+
+<section class="section dark-section">
+
+    <h2 class="heading">Understanding Water Challenges</h2>
+
+    <p class="subtitle">
+        Important environmental challenges that affect
+        water availability and agricultural sustainability.
+    </p>
+
+    <div class="cards">
+
+        <div class="card dark-card">
+            <img src="https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?w=800">
+            <div class="card-content">
+                <h3>Water Scarcity</h3>
+                <p>
+                Limited freshwater availability can affect
+                households, farming and ecosystems.
+                </p>
+            </div>
+        </div>
+
+        <div class="card dark-card">
+            <img src="https://images.unsplash.com/photo-1511497584788-876760111969?w=800">
+            <div class="card-content">
+                <h3>Groundwater Depletion</h3>
+                <p>
+                Excessive groundwater extraction can reduce
+                underground water reserves.
+                </p>
+            </div>
+        </div>
+
+        <div class="card dark-card">
+            <img src="https://images.unsplash.com/photo-1530789253388-582c481c54b0?w=800">
+            <div class="card-content">
+                <h3>Changing Rainfall</h3>
+                <p>
+                Irregular rainfall patterns can make
+                agricultural water planning difficult.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- AGRICULTURE -->
+
+<section class="section">
+
+    <h2 class="heading">Water and Agriculture</h2>
+
+    <p class="subtitle">
+        Efficient water management is important
+        for sustainable crop production.
+    </p>
+
+    <div class="info-row">
+
+        <img
+        src="https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1000"
+        alt="Agricultural farmland">
+
+        <div>
+            <h3>Responsible Agricultural Water Usage</h3>
+            <p>
+            Crops need water at different growth stages.
+            Understanding crop requirements, soil conditions
+            and local weather helps farmers plan irrigation
+            more efficiently.
+            </p>
+        </div>
+
+    </div>
+
+    <div class="info-row">
+
+        <div>
+            <h3>Drip Irrigation Technology</h3>
+            <p>
+            Drip irrigation delivers water directly near
+            plant roots. It can reduce water losses and
+            improve irrigation efficiency when properly
+            designed and maintained.
+            </p>
+        </div>
+
+        <img
+        src="https://images.unsplash.com/photo-1523348837708-15d4a09cfac2?w=1000"
+        alt="Agricultural plants and irrigation">
+    </div>
+
+</section>
+
+<!-- CONSERVATION -->
+
+<section class="section dark-section" id="conservation">
+
+    <h2 class="heading">Ways to Conserve Water</h2>
+
+    <p class="subtitle">
+        Simple and effective methods to protect
+        freshwater resources.
+    </p>
+
+    <div class="cards">
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1469122312224-c5846569feb1?w=800">
+            <div class="card-content">
+                <h3>🌧️ Rainwater Harvesting</h3>
+                <p>
+                Collect and store rainwater for suitable
+                future uses and groundwater recharge.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1497250681960-ef046c08a56e?w=800">
+            <div class="card-content">
+                <h3>🌱 Efficient Irrigation</h3>
+                <p>
+                Use suitable irrigation methods and
+                avoid unnecessary watering.
+                </p>
+            </div>
+        </div>
+
+        <div class="card">
+            <img src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?w=800">
+            <div class="card-content">
+                <h3>💧 Prevent Water Leakage</h3>
+                <p>
+                Regularly inspect pipelines, taps and
+                irrigation systems to prevent water loss.
+                </p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- WATER SAVING TIPS -->
+
+<section class="section">
+
+    <h2 class="heading">Simple Water Saving Practices</h2>
+
+    <p class="subtitle">
+        Small actions can make a meaningful difference.
+    </p>
+
+    <div class="tips">
+
+        <div class="tip">
+            <div class="tip-icon">🌧️</div>
+            <h3>Collect Rainwater</h3>
+            <p>Use rainwater harvesting systems wherever practical.</p>
+        </div>
+
+        <div class="tip">
+            <div class="tip-icon">🌿</div>
+            <h3>Choose Efficient Irrigation</h3>
+            <p>Consider drip irrigation and suitable watering schedules.</p>
+        </div>
+
+        <div class="tip">
+            <div class="tip-icon">🔧</div>
+            <h3>Fix Leaks</h3>
+            <p>Repair leaking pipes and irrigation connections.</p>
+        </div>
+
+        <div class="tip">
+            <div class="tip-icon">🌍</div>
+            <h3>Protect Water Bodies</h3>
+            <p>Prevent waste and pollution from entering water sources.</p>
+        </div>
+
+    </div>
+</section>
+
+<!-- AI RECOMMENDATION -->
+
+<section class="section">
+
+    <div class="ai-box">
+
+        <h2>🤖 AI-Based Water Conservation Recommendations</h2>
+
+        <p>
+        FarmShift AI promotes smarter agricultural water
+        management through data-based insights.
+        Recommendations can consider soil moisture,
+        crop requirements, weather conditions and
+        rainfall information.
+        </p>
+
+        <ul>
+            <li>Consider soil moisture before irrigation.</li>
+            <li>Review rainfall forecasts before watering crops.</li>
+            <li>Identify opportunities for efficient irrigation.</li>
+            <li>Encourage rainwater harvesting.</li>
+            <li>Reduce unnecessary water consumption.</li>
+        </ul>
+
+    </div>
+</section>
+
+<footer>
+    <h3>💧 FarmShift AI</h3>
+    <p>Save Water. Support Agriculture. Sustain the Future.</p>
+    <p>Smart Agriculture for a Sustainable Tomorrow.</p>
+</footer>
+
+</body>
+</html>
