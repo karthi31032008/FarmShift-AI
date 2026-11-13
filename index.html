@@ -276,6 +276,13 @@ footer strong {color:#75e69c}
     <h3>Climate Insights</h3>
     <p>Explore climate patterns and their impact on farming.</p>
   </div>
+ 
+<div class="card" onclick="showFeature('nasa')">
+    <div class="icon">🛰️</div>
+    <h3>NASA Earth Data</h3>
+    <p>Explore NASA satellite and Earth observation data.</p>
+</div>
+ 
 </div>
 </section>
  
@@ -571,7 +578,21 @@ function showFeature(feature) {
     climate: {
       title: "🌍 Climate Insights",
       description: "Explore climate patterns and their effects on agriculture."
-    }
+    },
+   
+nasa: {
+    icon: "🛰️",
+    title: "NASA Earth Data",
+    description: "Explore NASA Earth observation data for agricultural monitoring.",
+    details: [
+        "Explore satellite imagery.",
+        "Monitor vegetation conditions.",
+        "Study land surface temperature.",
+        "Explore rainfall and climate datasets.",
+        "Access NASA Earth observation information."
+    ]
+},
+   
   };
 
   const item = features[feature];
