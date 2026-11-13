@@ -282,43 +282,59 @@ footer strong {color:#75e69c}
 
 <!-- DASHBOARD -->
 <section class="dashboard" id="dashboard">
+
  <div class="heading">
   <h2>Farm <span class="green">Dashboard</span></h2>
   <p>A simple overview of agricultural monitoring features.</p>
  </div>
+
  <div class="cards">
-  <div class="card">
+
+  <!-- Crop Health -->
+  <div class="card" onclick="showFeature('dashboardCrop')">
    <div class="icon">🌱</div>
    <h3>Crop Health</h3>
    <div class="stat">Monitor</div>
    <div class="small">Field observation status</div>
   </div>
-  <div class="card">
+
+  <!-- Weather -->
+  <div class="card" onclick="showFeature('dashboardWeather')">
    <div class="icon">🌧️</div>
    <h3>Weather</h3>
    <div class="stat">Explore</div>
    <div class="small">Live data integration pending</div>
   </div>
-  <div class="card">
+
+  <!-- Satellite -->
+  <div class="card" onclick="showFeature('dashboardSatellite')">
    <div class="icon">🛰️</div>
    <h3>Satellite</h3>
    <div class="stat">Ready</div>
    <div class="small">Satellite integration pending</div>
   </div>
-  <div class="card">
+
+  <!-- AI Analysis -->
+  <div class="card" onclick="showFeature('dashboardAI')">
    <div class="icon">🤖</div>
    <h3>AI Analysis</h3>
    <div class="stat">Demo</div>
    <div class="small">Sample interface</div>
   </div>
+
  </div>
- <div class="map">
+
+ <!-- Farm Monitoring Map -->
+ <div class="map" onclick="showFeature('map')">
+
   <div>
    <div style="font-size:50px">🗺️</div>
    <h3>Farm Monitoring Map</h3>
    <p>Satellite map integration can be added here.</p>
   </div>
+
  </div>
+
 </section>
 
 <!-- NASA DATA -->
