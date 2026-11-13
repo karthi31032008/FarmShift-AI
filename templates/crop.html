@@ -1,0 +1,546 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | Crop Monitoring</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #07140e;
+    color: #effff2;
+    padding: 20px;
+}
+
+.container {
+    max-width: 1150px;
+    margin: auto;
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.logo {
+    color: #65e89a;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.subtitle {
+    color: #a7c4ae;
+    margin-top: 7px;
+    font-size: 13px;
+}
+
+.status {
+    background: #153b28;
+    color: #72f2a2;
+    padding: 9px 15px;
+    border-radius: 20px;
+    font-size: 12px;
+}
+
+.hero {
+    background: linear-gradient(120deg, #123b26, #071e15);
+    border: 1px solid #24583b;
+    padding: 25px;
+    border-radius: 20px;
+    margin-bottom: 22px;
+}
+
+.hero h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+}
+
+.hero p {
+    color: #b8d5c0;
+    line-height: 1.6;
+}
+
+select, input {
+    background: #10271b;
+    color: white;
+    border: 1px solid #376247;
+    padding: 12px;
+    border-radius: 9px;
+    width: 100%;
+    margin-top: 9px;
+}
+
+button {
+    background: #27c66b;
+    color: #052012;
+    border: none;
+    padding: 13px 20px;
+    border-radius: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-top: 14px;
+}
+
+button:hover {
+    background: #63ed9b;
+}
+
+.secondary-btn {
+    background: #193e2b;
+    color: #baffd0;
+    border: 1px solid #3d7652;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+    margin: 20px 0;
+}
+
+.card {
+    background: #10251a;
+    border: 1px solid #244c34;
+    border-radius: 16px;
+    padding: 19px;
+}
+
+.card h3 {
+    font-size: 14px;
+    color: #b4cdbb;
+    margin-bottom: 12px;
+}
+
+.value {
+    font-size: 28px;
+    font-weight: bold;
+    margin-bottom: 8px;
+}
+
+.green { color: #64e995; }
+.yellow { color: #f7cf65; }
+.red { color: #ff7777; }
+
+.small {
+    font-size: 12px;
+    color: #9db9a5;
+    line-height: 1.5;
+}
+
+.section {
+    background: #0d2116;
+    border: 1px solid #244c34;
+    padding: 22px;
+    border-radius: 17px;
+    margin: 20px 0;
+}
+
+.section h2 {
+    font-size: 20px;
+    margin-bottom: 17px;
+    color: #7df0a5;
+}
+
+.health-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.progress {
+    width: 100%;
+    height: 11px;
+    background: #263d2e;
+    border-radius: 20px;
+    overflow: hidden;
+    margin: 12px 0;
+}
+
+.progress span {
+    display: block;
+    height: 100%;
+    background: #35d879;
+    border-radius: 20px;
+}
+
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 13px 0;
+    border-bottom: 1px solid #294434;
+    gap: 10px;
+    font-size: 14px;
+}
+
+.info-row:last-child {
+    border-bottom: none;
+}
+
+.advice {
+    background: #153c28;
+    border-left: 4px solid #48dc82;
+    padding: 15px;
+    border-radius: 9px;
+    margin: 10px 0;
+    line-height: 1.6;
+    font-size: 14px;
+}
+
+.history-item {
+    background: #142c1d;
+    padding: 13px;
+    border-radius: 10px;
+    margin: 10px 0;
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+footer {
+    text-align: center;
+    color: #829d89;
+    font-size: 12px;
+    padding: 25px 5px;
+}
+
+@media(max-width: 800px) {
+    .grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media(max-width: 450px) {
+    body { padding: 12px; }
+    .grid { gap: 9px; }
+    .card { padding: 13px; }
+    .value { font-size: 23px; }
+    .hero h1 { font-size: 24px; }
+}
+</style>
+</head>
+
+<body>
+<div class="container">
+
+<header>
+    <div>
+        <div class="logo">🌱 FarmShift AI</div>
+        <div class="subtitle">Smart Crop Intelligence & Monitoring</div>
+    </div>
+    <div class="status">● DEMO MODE</div>
+</header>
+
+<div class="hero">
+    <h1>🌿 Crop Monitoring Dashboard</h1>
+    <p>
+        Monitor crop growth, vegetation health, soil moisture,
+        nutrients and crop conditions in one place.
+    </p>
+
+    <label for="cropSelect">Select Crop</label>
+    <select id="cropSelect">
+        <option>Rice / நெல்</option>
+        <option>Maize / மக்காச்சோளம்</option>
+        <option>Sugarcane / கரும்பு</option>
+        <option>Cotton / பருத்தி</option>
+        <option>Turmeric / மஞ்சள்</option>
+        <option>Groundnut / நிலக்கடலை</option>
+    </select>
+
+    <button onclick="trackCrop()">📍 Track My Crop</button>
+    <button class="secondary-btn" onclick="showAnalysis()">
+        🔍 View Crop Analysis
+    </button>
+</div>
+
+<div class="grid">
+
+    <div class="card">
+        <h3>🌿 Crop Health</h3>
+        <div class="value green" id="health">87/100</div>
+        <div class="small" id="healthStatus">Healthy condition</div>
+    </div>
+
+    <div class="card">
+        <h3>🛰️ NDVI Index</h3>
+        <div class="value green">0.78</div>
+        <div class="small">Good vegetation condition</div>
+    </div>
+
+    <div class="card">
+        <h3>💧 Soil Moisture</h3>
+        <div class="value">64%</div>
+        <div class="small">Demo soil moisture value</div>
+    </div>
+
+    <div class="card">
+        <h3>🌡️ Temperature</h3>
+        <div class="value">29°C</div>
+        <div class="small">Illustrative temperature</div>
+    </div>
+
+</div>
+
+<div class="section">
+    <h2>📊 Overall Crop Health</h2>
+
+    <div class="health-row">
+        <span>Crop condition</span>
+        <strong class="green">Healthy</strong>
+    </div>
+
+    <div class="progress">
+        <span style="width:87%"></span>
+    </div>
+
+    <p class="small">
+        The sample crop health score is 87 out of 100.
+        Actual health assessment requires reliable field or satellite data.
+    </p>
+</div>
+
+<div class="section">
+    <h2>🌱 Crop Growth Analysis</h2>
+
+    <div class="info-row">
+        <span>Crop selected</span>
+        <strong id="selectedCrop">Rice / நெல்</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Growth stage</span>
+        <strong>Vegetative</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Growth condition</span>
+        <strong class="green">Good</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Growth progress</span>
+        <strong>70% (Demo)</strong>
+    </div>
+</div>
+
+<div class="section">
+    <h2>💧 Soil & Nutrient Monitoring</h2>
+
+    <div class="info-row">
+        <span>Soil moisture</span>
+        <strong>64% – Demo</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Soil pH</span>
+        <strong>6.5 – Demo</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Nitrogen (N)</span>
+        <strong>Medium</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Phosphorus (P)</span>
+        <strong>Good</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Potassium (K)</span>
+        <strong>Good</strong>
+    </div>
+
+    <p class="small">
+        Soil nutrient values are illustrative. Laboratory testing
+        or connected soil sensors are needed for actual readings.
+    </p>
+</div>
+
+<div class="section">
+    <h2>🛡️ Disease & Pest Risk</h2>
+
+    <div class="info-row">
+        <span>Disease risk</span>
+        <strong class="green">Low</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Pest risk</span>
+        <strong class="yellow">Moderate</strong>
+    </div>
+
+    <div class="info-row">
+        <span>Crop stress</span>
+        <strong class="green">Low (Demo)</strong>
+    </div>
+</div>
+
+<div class="section">
+    <h2>🤖 AI Crop Recommendations</h2>
+
+    <div class="advice">
+        💧 <strong>Irrigation:</strong>
+        Monitor soil moisture and irrigate according to crop
+        requirements and local conditions.
+    </div>
+
+    <div class="advice">
+        🌿 <strong>Crop Health:</strong>
+        Regularly inspect leaves and plants for unusual colour
+        changes or wilting.
+    </div>
+
+    <div class="advice">
+        🐛 <strong>Pest Monitoring:</strong>
+        Check the crop regularly for pest activity and damage.
+    </div>
+
+    <div class="advice">
+        🧪 <strong>Soil:</strong>
+        Use soil testing before deciding fertilizer requirements.
+    </div>
+</div>
+
+<div class="section">
+    <h2>📈 Crop Tracking History</h2>
+    <p class="small">
+        Every time you press Track My Crop, a demo snapshot is
+        saved in this browser.
+    </p>
+
+    <div id="history">
+        <p class="small" style="margin-top:15px">
+            No tracking history yet. Press Track My Crop to begin.
+        </p>
+    </div>
+
+    <button class="secondary-btn" onclick="clearHistory()">
+        Clear Demo History
+    </button>
+</div>
+
+<footer>
+    FarmShift AI © 2026 | Smart Agriculture Platform
+    <br><br>
+    Demo readings only – not live agricultural measurements.
+</footer>
+
+</div>
+
+<script>
+const cropSelect = document.getElementById("cropSelect");
+
+cropSelect.addEventListener("change", function() {
+    document.getElementById("selectedCrop").textContent = this.value;
+});
+
+function getHistory() {
+    try {
+        return JSON.parse(localStorage.getItem("farmshiftCropHistory")) || [];
+    } catch (error) {
+        return [];
+    }
+}
+
+function trackCrop() {
+    const crop = cropSelect.value;
+
+    const snapshot = {
+        crop: crop,
+        health: 87,
+        ndvi: 0.78,
+        moisture: 64,
+        date: new Date().toLocaleString()
+    };
+
+    const history = getHistory();
+    history.unshift(snapshot);
+
+    try {
+        localStorage.setItem(
+            "farmshiftCropHistory",
+            JSON.stringify(history)
+        );
+    } catch (error) {
+        alert("Unable to save tracking history in this browser.");
+        return;
+    }
+
+    renderHistory();
+
+    alert(
+        "Crop tracking snapshot saved!\\n" +
+        "Crop: " + crop +
+        "\\nHealth: 87/100 (Demo)"
+    );
+}
+
+function renderHistory() {
+    const history = getHistory();
+    const area = document.getElementById("history");
+
+    if (history.length === 0) {
+        area.innerHTML =
+            '<p class="small">No tracking history yet.</p>';
+        return;
+    }
+
+    area.innerHTML = "";
+
+    history.forEach(function(item, index) {
+        const card = document.createElement("div");
+        card.className = "history-item";
+
+        const title = document.createElement("strong");
+        title.textContent = "📍 Tracking " + (index + 1);
+
+        const details = document.createElement("div");
+        details.textContent =
+            "Crop: " + item.crop +
+            " | Health: " + item.health + "/100" +
+            " | NDVI: " + item.ndvi +
+            " | Moisture: " + item.moisture + "%";
+
+        const date = document.createElement("div");
+        date.className = "small";
+        date.textContent = item.date;
+
+        card.appendChild(title);
+        card.appendChild(details);
+        card.appendChild(date);
+
+        area.appendChild(card);
+    });
+}
+
+function showAnalysis() {
+    document.querySelector(".section").scrollIntoView({
+        behavior: "smooth"
+    });
+}
+
+function clearHistory() {
+    if (confirm("Clear all demo tracking history?")) {
+        localStorage.removeItem("farmshiftCropHistory");
+        renderHistory();
+    }
+}
+
+renderHistory();
+</script>
+
+</body>
+</html>
