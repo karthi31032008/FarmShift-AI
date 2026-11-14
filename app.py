@@ -289,9 +289,9 @@ def earth_observation():
 def ai_analysis():
     return render_template("ai-analysis.html")
 
-@app.route("/earth-observation")
-def earth_observation():
-    return render_template("earth_observation.html")
+@app.route("/satellite")
+def satellite():
+    return render_template("satellite.html")
 
 
 @app.route("/land-temperature")
