@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | NASA Crop Health</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#061810;
+  color:#eafff0;
+  font-family:Arial,sans-serif;
+}
+header{
+  background:#09251a;
+  padding:22px 6%;
+  border-bottom:1px solid #24523d;
+}
+header h2{color:#54e6a2}
+header p{color:#a5c8b5;margin-top:7px}
+.container{max-width:1200px;margin:auto;padding:25px 5%}
+.hero{padding:20px 0}
+.hero h1{font-size:34px;color:#4ee49a}
+.hero p{color:#abc8b7;line-height:1.7;margin-top:10px}
+.panel{
+  background:#0d291c;
+  border:1px solid #28533c;
+  padding:20px;
+  border-radius:14px;
+  margin:20px 0;
+}
+input{
+  padding:12px;
+  background:#071d13;
+  border:1px solid #39694d;
+  border-radius:8px;
+  color:white;
+  width:145px;
+  margin:5px;
+}
+button{
+  padding:12px 17px;
+  border:0;
+  border-radius:8px;
+  background:#17a66a;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+  margin:5px;
+}
+button:hover{background:#0b8050}
+#status{color:#f1ce78;margin-top:12px;line-height:1.6}
+.grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:15px;
+  margin:20px 0;
+}
+.card{
+  background:#0d291c;
+  border:1px solid #28533c;
+  border-radius:13px;
+  padding:20px;
+}
+.card h3{color:#53e6a1;margin-bottom:12px}
+.card p{color:#abc8b7;line-height:1.6}
+.section-title{color:#55e6a2;margin:28px 0 15px}
+#map{
+  height:430px;
+  width:100%;
+  border-radius:14px;
+  border:1px solid #315b43;
+}
+.legend{
+  display:flex;flex-wrap:wrap;gap:12px;
+  margin-top:15px;color:#b7d5c2;font-size:13px;
+}
+.dot{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px}
+.note{color:#a9c5b5;line-height:1.7;font-size:13px}
+footer{text-align:center;padding:25px;color:#8aa995}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:27px}
+  #map{height:340px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🌱 FARMSHIFT AI</h2>
+  <p>NASA Satellite Crop Health Monitoring</p>
+</header>
+
+<div class="container">
+
+<div class="hero">
+  <h1>Crop Health Monitor</h1>
+  <p>
+    Monitor agricultural vegetation using NASA MODIS
+    satellite observations and vegetation index imagery.
+  </p>
+</div>
+
+<div class="panel">
+  <h3>📍 Select Your Farm Location</h3>
+
+  <p id="locationText" style="margin:12px 0;color:#a9c8b6">
+    Location not selected
+  </p>
+
+  <input type="number" id="latitude" step="any"
+  placeholder="Latitude">
+
+  <input type="number" id="longitude" step="any"
+  placeholder="Longitude">
+
+  <br>
+
+  <button onclick="detectLocation()">Detect My Location</button>
+  <button onclick="searchLocation()">Search Location</button>
+
+  <p id="status">Select your location to begin.</p>
+</div>
+
+<h2 class="section-title">🛰️ NASA Vegetation Observation</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <h3>🌿 NDVI Satellite Layer</h3>
+    <p>
+      Normalized Difference Vegetation Index.
+      Used to observe vegetation greenness.
+    </p>
+    <p style="margin-top:12px">
+      Source: NASA MODIS Terra MOD13Q1
+    </p>
+  </div>
+
+  <div class="card">
+    <h3>🌍 Satellite Observation</h3>
+    <p>
+      MODIS Terra satellite imagery helps visualize
+      land surface and agricultural areas.
+    </p>
+    <p style="margin-top:12px">
+      Source: NASA GIBS
+    </p>
+  </div>
+
+</div>
+
+<h2 class="section-title">NASA Satellite Map</h2>
+
+<div class="panel">
+  <p style="margin-bottom:12px;color:#b5d5c1">
+    Choose the satellite observation layer:
+  </p>
+
+  <button onclick="changeLayer('ndvi')">
+    🌿 NDVI View
+  </button>
+
+  <button onclick="changeLayer('truecolor')">
+    🌍 True Color View
+  </button>
+
+  <br><br>
+
+  <label for="observationDate">Observation date:</label>
+  <input type="date" id="observationDate">
+
+  <button onclick="updateMap()">Update Satellite Map</button>
+
+  <div id="map"></div>
+
+  <p id="mapStatus" class="note" style="margin-top:12px">
+    NASA satellite imagery will load here.
+  </p>
+
+  <div class="legend">
+    <span><span class="dot" style="background:#36b96a"></span>Vegetation imagery</span>
+    <span><span class="dot" style="background:#d6c75a"></span>Mixed surface imagery</span>
+    <span><span class="dot" style="background:#478cc7"></span>Water / other imagery</span>
+  </div>
+</div>
+
+<h2 class="section-title">About NASA NDVI</h2>
+
+<div class="panel">
+  <p class="note">
+    NDVI is an indicator derived from satellite reflectance
+    data. It helps observe vegetation greenness and changes
+    over time.
+  </p>
+
+  <br>
+
+  <p class="note">
+    NASA MODIS MOD13Q1 provides vegetation indices at
+    250-metre spatial resolution using 16-day composite
+    observations.
+  </p>
+
+  <br>
+
+  <p class="note">
+    NDVI alone cannot diagnose crop diseases or identify
+    the exact reason for vegetation stress. Cloud cover,
+    observation quality, crop type and growth stage can
+    affect interpretation.
+  </p>
+</div>
+
+<h2 class="section-title">Data Information</h2>
+
+<div class="panel">
+  <p class="note">
+    Satellite product: MODIS Terra MOD13Q1
+  </p>
+  <p class="note">
+    Visualization: NASA Global Imagery Browse Services (GIBS)
+  </p>
+  <p class="note">
+    Observation frequency: 16-day composite
+  </p>
+  <p class="note">
+    Spatial resolution: 250 metres
+  </p>
+  <p class="note">
+    Selected imagery date: <span id="dateInfo">--</span>
+  </p>
+</div>
+
+</div>
+
+<footer>
+  FarmShift AI | NASA Earth Observation
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+let map;
+let marker;
+let currentLayer = "ndvi";
+let satelliteLayer;
+
+const layers = {
+  ndvi: {
+    name: "MODIS_Terra_NDVI_8Day",
+    format: "png",
+    resolution: "GoogleMapsCompatible_Level9"
+  },
+  truecolor: {
+    name: "MODIS_Terra_CorrectedReflectance_TrueColor",
+    format: "jpg",
+    resolution: "GoogleMapsCompatible_Level9"
+  }
+};
+
+function initializeMap(lat,lon){
+
+  if(!map){
+    map = L.map("map").setView([lat,lon],7);
+  }else{
+    map.setView([lat,lon],7);
+  }
+
+  if(marker){
+    map.removeLayer(marker);
+  }
+
+  marker = L.marker([lat,lon])
+    .addTo(map)
+    .bindPopup("Selected Farm Location")
+    .openPopup();
+
+  updateMap();
+}
+
+function getSelectedDate(){
+
+  const input = document.getElementById("observationDate");
+
+  if(!input.value){
+    const d = new Date();
+    d.setUTCDate(d.getUTCDate()-20);
+    input.value = d.toISOString().slice(0,10);
+  }
+
+  return input.value;
+}
+
+function updateMap(){
+
+  if(!map) return;
+
+  const date = getSelectedDate();
+  const layer = layers[currentLayer];
+
+  if(satelliteLayer){
+    map.removeLayer(satelliteLayer);
+  }
+
+  const url =
+  "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/" +
+  layer.name +
+  "/default/" +
+  date +
+  "/" +
+  layer.resolution +
+  "/{z}/{y}/{x}." +
+  layer.format;
+
+  satelliteLayer = L.tileLayer(url,{
+    minZoom:1,
+    maxZoom:9,
+    attribution:"NASA GIBS / MODIS",
+    tileSize:256
+  });
+
+  satelliteLayer.addTo(map);
+
+  document.getElementById("dateInfo").textContent = date;
+
+  document.getElementById("mapStatus").textContent =
+    "Requested NASA " +
+    (currentLayer === "ndvi" ? "NDVI" : "True Color") +
+    " imagery for " + date +
+    ". Availability depends on the satellite observation and processing date.";
+}
+
+function changeLayer(type){
+  currentLayer = type;
+  updateMap();
+}
+
+function detectLocation(){
+
+  if(!navigator.geolocation){
+    document.getElementById("status").textContent =
+      "Location is not supported by this browser.";
+    return;
+  }
+
+  document.getElementById("status").textContent =
+    "Detecting location...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    position=>{
+
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      document.getElementById("latitude").value = lat;
+      document.getElementById("longitude").value = lon;
+
+      showLocation(lat,lon);
+    },
+
+    error=>{
+      document.getElementById("status").textContent =
+        "Location permission denied. Enter coordinates manually.";
+    },
+
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function searchLocation(){
+
+  const lat = Number(document.getElementById("latitude").value);
+  const lon = Number(document.getElementById("longitude").value);
+
+  if(
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 || lat > 90 ||
+    lon < -180 || lon > 180
+  ){
+    document.getElementById("status").textContent =
+      "Enter valid latitude and longitude.";
+    return;
+  }
+
+  showLocation(lat,lon);
+}
+
+function showLocation(lat,lon){
+
+  document.getElementById("locationText").textContent =
+    "Latitude: " + lat.toFixed(5) +
+    " | Longitude: " + lon.toFixed(5);
+
+  document.getElementById("status").textContent =
+    "Location selected. Loading NASA imagery...";
+
+  initializeMap(lat,lon);
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate()-20);
+
+  document.getElementById("observationDate").value =
+    d.toISOString().slice(0,10);
+
+});
+
+</script>
+
+</body>
+</html>
