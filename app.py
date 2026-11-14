@@ -285,6 +285,10 @@ def crop_health():
 def earth_observation():
     return render_template("satellite.html")
 
+@app.route("/ai-analysis")
+def ai_analysis():
+    return render_template("ai-analysis.html")
+
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
