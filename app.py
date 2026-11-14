@@ -189,9 +189,9 @@ def weather():
 
     response = requests.get(url, params=params, timeout=15)
     return jsonify(response.json())
-# NASA POWER WEATHER DATA API
-@app.route("/api/nasa-weather")
-def nasa_weather():
+# NASA GPM RAINFALL DATA API
+@app.route("/api/nasa-rainfall")
+def nasa_rainfall():
 
     latitude = request.args.get("lat", "11.6643")
     longitude = request.args.get("lon", "78.1460")
@@ -212,7 +212,7 @@ def nasa_weather():
         url = "https://power.larc.nasa.gov/api/temporal/daily/point"
 
         params = {
-            "parameters": "T2M,T2M_MAX,T2M_MIN,PRECTOTCORR,RH2M,WS2M",
+            "parameters": "PRECTOTCORR",
             "community": "AG",
             "longitude": longitude,
             "latitude": latitude,
@@ -221,35 +221,29 @@ def nasa_weather():
             "format": "JSON"
         }
 
-        response = requests.get(
-            url,
-            params=params,
-            timeout=30
-        )
-
+        response = requests.get(url, params=params, timeout=30)
         response.raise_for_status()
 
-        nasa_data = response.json()
-
-        weather_data = nasa_data["properties"]["parameter"]
+        result = response.json()
+        rainfall = result["properties"]["parameter"]["PRECTOTCORR"]
 
         return jsonify({
             "status": "success",
             "source": "NASA POWER",
-            "latitude": latitude,
-            "longitude": longitude,
-            "data": weather_data
+            "dataset": "Daily corrected precipitation",
+            "location": {
+                "latitude": latitude,
+                "longitude": longitude
+            },
+            "rainfall_mm_day": rainfall
         })
 
     except requests.RequestException:
-        return jsonify({
-            "error": "NASA service unavailable"
-        }), 503
+        return jsonify({"error": "Rainfall data service unavailable"}), 503
 
     except (ValueError, KeyError, TypeError):
-        return jsonify({
-            "error": "Unable to process NASA data"
-        }), 500
+        return jsonify({"error": "Unable to process rainfall data"}), 500
+
         
 @app.route('/satellite')
 def satellite():
