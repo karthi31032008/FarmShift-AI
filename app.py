@@ -272,7 +272,10 @@ def ai_recommendation():
 @app.route("/water-awareness")
 def water_awareness():
     return render_template("water-awareness.html")
-    
+
+@app.route("/climate-insights")
+def climate_insights():
+    return render_template("climate-insights.html")
 
 
 # START SERVER - ALWAYS KEEP THIS AT THE END
