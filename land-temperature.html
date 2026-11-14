@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASA Thermal Observation | FarmShift AI</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #090c17;
+  color: #f5f5ff;
+}
+
+header {
+  padding: 20px 6%;
+  background: #171523;
+  border-bottom: 1px solid #68452d;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #ffb45c;
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.back {
+  color: #ffc078;
+  text-decoration: none;
+  border: 1px solid #a56b37;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.container {
+  padding: 35px 6%;
+}
+
+.heading h1 {
+  color: #ffb45c;
+  font-size: 30px;
+}
+
+.heading p {
+  color: #b8b5c5;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.status {
+  color: #ffbd70;
+  font-size: 11px;
+  margin: 18px 0 25px;
+  letter-spacing: 2px;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #171a29;
+  border: 1px solid #59432d;
+  border-radius: 15px;
+  padding: 20px;
+}
+
+.panel h3 {
+  color: #ffbd70;
+  margin-bottom: 15px;
+}
+
+#thermalMap {
+  height: 470px;
+  width: 100%;
+  border-radius: 10px;
+  background: #20202b;
+}
+
+.data {
+  padding: 17px 5px;
+  border-bottom: 1px solid #393447;
+}
+
+.data span {
+  display: block;
+  color: #b8b5c5;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.data strong {
+  color: #ffbd70;
+  font-size: 16px;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  margin-top: 15px;
+  font-size: 12px;
+}
+
+.info {
+  margin-top: 20px;
+  padding: 20px;
+  background: #211c25;
+  border: 1px solid #68452d;
+  border-radius: 12px;
+  line-height: 1.8;
+  color: #e1d6d0;
+}
+
+footer {
+  text-align: center;
+  padding: 25px;
+  color: #a99c91;
+  font-size: 12px;
+}
+
+@media(max-width:750px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  #thermalMap {
+    height: 350px;
+  }
+
+  .heading h1 {
+    font-size: 24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🌱 FarmShift AI</div>
+  <a class="back" href="index.html">← Dashboard</a>
+</header>
+
+<div class="container">
+
+  <div class="heading">
+    <h1>🌡️ Land Temperature Observation</h1>
+    <p>
+      Explore land surface temperature patterns
+      through NASA MODIS satellite observations.
+    </p>
+  </div>
+
+  <div class="status">
+    ● NASA THERMAL OBSERVATION SYSTEM
+  </div>
+
+  <div class="dashboard">
+
+    <div class="panel">
+      <h3>🔥 Satellite Thermal View</h3>
+      <div id="thermalMap"></div>
+
+      <div class="legend">
+        <span>🌡️ Thermal imagery</span>
+        <span>🛰️ MODIS Terra</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h3>📡 Thermal Mission Data</h3>
+
+      <div class="data">
+        <span>SATELLITE</span>
+        <strong>MODIS TERRA</strong>
+      </div>
+
+      <div class="data">
+        <span>REGION</span>
+        <strong>Erode, Tamil Nadu</strong>
+      </div>
+
+      <div class="data">
+        <span>DATA PRODUCT</span>
+        <strong>MOD11A1</strong>
+      </div>
+
+      <div class="data">
+        <span>OBSERVATION</span>
+        <strong>Land Surface Temperature</strong>
+      </div>
+
+      <div class="data">
+        <span>SPATIAL RESOLUTION</span>
+        <strong>Approximately 1 km</strong>
+      </div>
+
+      <div class="data">
+        <span>DATA SOURCE</span>
+        <strong>NASA Earthdata GIBS</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="info">
+    <h3 style="color:#ffbd70;margin-bottom:10px">
+      🌡️ Surface Heat Intelligence
+    </h3>
+
+    Explore satellite-based thermal observations
+    to understand:
+
+    <ul style="padding-left:20px;margin-top:10px">
+      <li>Land surface heating patterns</li>
+      <li>Hot and cool surface regions</li>
+      <li>Agricultural heat stress context</li>
+      <li>Environmental temperature changes</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  FarmShift AI | NASA Thermal Observation Demo
+  <br><br>
+  Data source: NASA GIBS / MODIS Terra
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const thermalMap = L.map("thermalMap").setView(
+  [11.3410, 77.7172], 7
+);
+
+L.tileLayer(
+  "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_Land_Surface_Temp_Day/default/2026-11-10/GoogleMapsCompatible_Level9/{z}/{y}/{x}.png",
+  {
+    attribution: "NASA GIBS / MODIS Terra",
+    maxNativeZoom: 9,
+    maxZoom: 12
+  }
+).addTo(thermalMap);
+
+L.marker([11.3410,77.7172])
+  .addTo(thermalMap)
+  .bindPopup("Erode Thermal Observation")
+  .openPopup();
+</script>
+
+</body>
+</html>
+
