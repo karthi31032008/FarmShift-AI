@@ -1039,6 +1039,68 @@ function showFeature(feature) {
  
 </script>
 
+ <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const map = L.map('farmMap').setView([11.3410,77.7172],14);
+
+L.tileLayer(
+'https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+{
+attribution:'Tiles © Esri',
+maxZoom:19
+}
+).addTo(map);
+
+const fields = [
+{
+name:'Field A - Healthy',
+ndvi:'0.82',
+color:'#20d878',
+coords:[[11.345,77.711],[11.346,77.718],[11.341,77.719],[11.340,77.712]]
+},
+{
+name:'Field B - Moderate',
+ndvi:'0.54',
+color:'#f3c544',
+coords:[[11.348,77.720],[11.349,77.727],[11.344,77.728],[11.343,77.721]]
+},
+{
+name:'Field C - Critical',
+ndvi:'0.29',
+color:'#ed6255',
+coords:[[11.337,77.714],[11.338,77.722],[11.333,77.723],[11.332,77.715]]
+}
+];
+
+fields.forEach(field => {
+L.polygon(field.coords,{
+color:field.color,
+fillColor:field.color,
+fillOpacity:0.45,
+weight:3
+})
+.addTo(map)
+.bindPopup(
+'<b>'+field.name+'</b><br>NDVI: '+field.ndvi
+);
+});
+
+function selectFarm(){
+const key=document.getElementById('fieldSelect').value;
+const field=fields[key.charCodeAt(0)-65];
+
+if(!field)return;
+
+document.getElementById('ndvi').textContent=field.ndvi;
+
+map.fitBounds(
+L.polygon(field.coords).getBounds(),
+{padding:[30,30]}
+);
+}
+</script>
+
 </body>
                 </html>
                 
