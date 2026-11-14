@@ -204,6 +204,155 @@ footer strong {color:#75e69c}
  section {padding:65px 6%}
  .heading h2 {font-size:29px}
 }
+ /* FARM MONITORING MAP DESIGN */
+
+.fm-dashboard {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.fm-map-panel,
+.fm-sidebar {
+  background: #09291c;
+  border: 1px solid #20513a;
+  border-radius: 16px;
+  padding: 18px;
+}
+
+.fm-map-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  gap: 10px;
+}
+
+.fm-map-top h3,
+.fm-sidebar h3 {
+  color: #62e5a5;
+  font-size: 17px;
+}
+
+.fm-map-top p {
+  color: #a5b9ae;
+  font-size: 12px;
+  margin-top: 7px;
+}
+
+.fm-live {
+  color: #65e5a4;
+  font-size: 11px;
+}
+
+#farmMap {
+  width: 100%;
+  height: 430px;
+  border-radius: 12px;
+  overflow: hidden;
+  z-index: 1;
+}
+
+.fm-legend {
+  display: flex;
+  justify-content: space-around;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding-top: 15px;
+  color: #d5eadc;
+  font-size: 12px;
+}
+
+.fm-sidebar label {
+  display: block;
+  margin: 18px 0 8px;
+  color: #b6cabe;
+  font-size: 12px;
+}
+
+.fm-sidebar select {
+  width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  background: #102f21;
+  color: white;
+  border: 1px solid #39714e;
+}
+
+.fm-status {
+  background: #103b27;
+  padding: 15px;
+  border-radius: 10px;
+  margin: 18px 0;
+}
+
+.fm-status h2 {
+  color: #5ee49d;
+  font-size: 21px;
+  margin-bottom: 8px;
+}
+
+.fm-status p {
+  color: #b7cabc;
+  font-size: 12px;
+}
+
+.fm-metric {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  border-bottom: 1px solid #234a36;
+  padding: 14px 0;
+  color: #d5eadc;
+  font-size: 12px;
+}
+
+.fm-metric strong {
+  color: #5be4a0;
+  font-size: 16px;
+}
+
+.fm-bottom {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 15px;
+  margin-top: 20px;
+}
+
+.fm-bottom div {
+  padding: 22px;
+  background: #0a3020;
+  border: 1px solid #20513a;
+  border-radius: 12px;
+}
+
+.fm-bottom span {
+  font-size: 11px;
+  color: #a6c7b4;
+}
+
+.fm-bottom h2 {
+  color: #55e5a0;
+  margin-top: 10px;
+}
+
+@media(max-width:750px) {
+  .fm-dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  #farmMap {
+    height: 350px;
+  }
+
+  .fm-bottom {
+    grid-template-columns: 1fr;
+  }
+}
+
+
 </style>
 </head>
 
