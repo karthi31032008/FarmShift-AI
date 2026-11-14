@@ -283,9 +283,7 @@ def earth_observation():
 def ai_analysis():
     return render_template("ai-analysis.html")
 
-@app.route("/satellite")
-def satellite():
-    return render_template("satellite.html")
+
 
 
 @app.route("/land-temperature")
