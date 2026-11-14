@@ -289,6 +289,20 @@ def earth_observation():
 def ai_analysis():
     return render_template("ai-analysis.html")
 
+@app.route("/earth-observation")
+def earth_observation():
+    return render_template("earth_observation.html")
+
+
+@app.route("/land-temperature")
+def land_temperature():
+    return render_template("land_temperature.html")
+
+
+@app.route("/precipitation")
+def precipitation():
+    return render_template("precipitation.html")
+
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
