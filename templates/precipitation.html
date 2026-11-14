@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | Precipitation Intelligence</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #071421;
+    color: #eaf6ff;
+    min-height: 100vh;
+}
+
+header {
+    padding: 22px 7%;
+    background: #0d2033;
+    border-bottom: 1px solid #24425b;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h2 {
+    color: #42d6ff;
+}
+
+header a {
+    color: white;
+    text-decoration: none;
+}
+
+.container {
+    width: 90%;
+    max-width: 1150px;
+    margin: 35px auto;
+}
+
+.heading {
+    margin-bottom: 25px;
+}
+
+.heading h1 {
+    font-size: 32px;
+    color: #61d9ff;
+}
+
+.heading p {
+    color: #a8bfd2;
+    margin-top: 10px;
+    line-height: 1.6;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin: 25px 0;
+}
+
+input, button {
+    padding: 13px;
+    border-radius: 8px;
+    border: 1px solid #31536c;
+    background: #10283c;
+    color: white;
+}
+
+input {
+    width: 150px;
+}
+
+button {
+    background: #087eaa;
+    cursor: pointer;
+    border: none;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #06a6d5;
+}
+
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit,minmax(220px,1fr));
+    gap: 18px;
+}
+
+.card {
+    background: linear-gradient(145deg,#102b42,#0c1e30);
+    border: 1px solid #244b65;
+    padding: 23px;
+    border-radius: 14px;
+}
+
+.card h3 {
+    color: #9dc5df;
+    font-size: 15px;
+    margin-bottom: 18px;
+}
+
+.value {
+    font-size: 29px;
+    font-weight: bold;
+    color: #4bd5ff;
+}
+
+.unit {
+    color: #a9c2d4;
+    font-size: 13px;
+}
+
+.chart-card {
+    margin-top: 22px;
+    min-height: 330px;
+}
+
+canvas {
+    max-height: 260px;
+}
+
+.status {
+    margin-top: 20px;
+    padding: 14px;
+    background: #102b42;
+    border-radius: 8px;
+    color: #a9d9f2;
+    line-height: 1.5;
+}
+
+footer {
+    text-align: center;
+    padding: 25px;
+    color: #8da9bc;
+    font-size: 13px;
+}
+
+@media(max-width:600px) {
+    .heading h1 {
+        font-size: 25px;
+    }
+    input {
+        width: 100%;
+    }
+    button {
+        width: 100%;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>🌧 FarmShift AI</h2>
+    <a href="/">← Dashboard</a>
+</header>
+
+<div class="container">
+
+    <div class="heading">
+        <h1>Precipitation Intelligence</h1>
+        <p>
+            Monitor rainfall observations using NASA POWER data.
+            Explore agricultural rainfall conditions for your location.
+        </p>
+    </div>
+
+    <div class="controls">
+        <input id="latitude" type="number"
+               step="any" value="11.6643" placeholder="Latitude">
+
+        <input id="longitude" type="number"
+               step="any" value="78.1460" placeholder="Longitude">
+
+        <button onclick="loadRainfall()">Analyze Rainfall</button>
+        <button onclick="useLocation()">My Location</button>
+    </div>
+
+    <div class="grid">
+
+        <div class="card">
+            <h3>Latest Daily Rainfall</h3>
+            <div class="value" id="latest">--</div>
+            <div class="unit">mm/day</div>
+        </div>
+
+        <div class="card">
+            <h3>7-Day Total Rainfall</h3>
+            <div class="value" id="total">--</div>
+            <div class="unit">mm (sum of available daily values)</div>
+        </div>
+
+        <div class="card">
+            <h3>Rainfall Condition</h3>
+            <div class="value" id="condition">--</div>
+            <div class="unit">Based on latest daily rainfall</div>
+        </div>
+
+        <div class="card">
+            <h3>Observation Location</h3>
+            <div class="value" id="location" style="font-size:20px">Tamil Nadu</div>
+            <div class="unit" id="coordinates">11.6643, 78.1460</div>
+        </div>
+
+    </div>
+
+    <div class="card chart-card">
+        <h3>7-Day Rainfall Observation</h3>
+        <canvas id="rainChart"></canvas>
+    </div>
+
+    <div class="status" id="status">
+        Connecting to NASA POWER data...
+    </div>
+
+</div>
+
+<footer>
+    FarmShift AI | NASA POWER Precipitation Intelligence
+    <br><br>
+    Data source: NASA POWER Daily AG Data
+</footer>
+
+<script>
+
+let rainChart = null;
+
+async function loadRainfall() {
+
+    const lat = document.getElementById("latitude").value;
+    const lon = document.getElementById("longitude").value;
+
+    if (!lat || !lon) {
+        alert("Enter latitude and longitude");
+        return;
+    }
+
+    document.getElementById("status").innerText =
+        "Fetching NASA rainfall observations...";
+
+    try {
+
+        const response = await fetch(
+            `/api/nasa-rainfall?lat=${encodeURIComponent(lat)}&lon=${encodeURIComponent(lon)}`
+        );
+
+        const result = await response.json();
+
+        if (!response.ok || result.status !== "success") {
+            throw new Error(result.error || "Unable to load rainfall data");
+        }
+
+        const rainfall = result.rainfall_mm_day;
+
+        const dates = Object.keys(rainfall).sort();
+
+        const values = dates.map(date => {
+            const value = Number(rainfall[date]);
+            return value >= 0 ? value : null;
+        });
+
+        const validValues = values.filter(v => v !== null);
+
+        if (!validValues.length) {
+            throw new Error("No valid rainfall observations available");
+        }
+
+        const latest = validValues[validValues.length - 1];
+
+        const total = validValues.reduce((sum, value) => sum + value, 0);
+
+        document.getElementById("latest").innerText =
+            latest.toFixed(2);
+
+        document.getElementById("total").innerText =
+            total.toFixed(2);
+
+        let condition;
+
+        if (latest === 0) {
+            condition = "Dry";
+        } else if (latest < 2.5) {
+            condition = "Light";
+        } else if (latest < 15) {
+            condition = "Moderate";
+        } else {
+            condition = "Heavy";
+        }
+
+        document.getElementById("condition").innerText = condition;
+
+        document.getElementById("location").innerText =
+            "Selected Area";
+
+        document.getElementById("coordinates").innerText =
+            lat + ", " + lon;
+
+        if (rainChart) {
+            rainChart.destroy();
+        }
+
+        const ctx = document.getElementById("rainChart");
+
+        rainChart = new Chart(ctx, {
+            type: "bar",
+            data: {
+                labels: dates.map(date => {
+                    return date.slice(6,8) + "/" +
+                           date.slice(4,6);
+                }),
+                datasets: [{
+                    label: "Rainfall (mm/day)",
+                    data: values,
+                    backgroundColor: "#25bce9",
+                    borderColor: "#69ddff",
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: "Rainfall (mm)",
+                            color: "white"
+                        },
+                        ticks: { color: "#b5d2e5" },
+                        grid: { color: "#29445b" }
+                    },
+                    x: {
+                        ticks: { color: "#b5d2e5" },
+                        grid: { display: false }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        labels: { color: "white" }
+                    }
+                }
+            }
+        });
+
+        document.getElementById("status").innerText =
+            "Successfully loaded " + result.source +
+            " data. Daily observations: " + dates.length +
+            ". Last available observation: " + dates[dates.length - 1] +
+            ". Values are NASA POWER estimates, not direct GPM IMERG observations.";
+
+    } catch(error) {
+
+        document.getElementById("status").innerText =
+            "Data Error: " + error.message;
+
+    }
+}
+
+function useLocation() {
+
+    if (!navigator.geolocation) {
+        alert("Location is not supported by this browser");
+        return;
+    }
+
+    navigator.geolocation.getCurrentPosition(position => {
+
+        document.getElementById("latitude").value =
+            position.coords.latitude;
+
+        document.getElementById("longitude").value =
+            position.coords.longitude;
+
+        loadRainfall();
+
+    }, () => {
+        alert("Unable to access location. Please enter coordinates manually.");
+    });
+}
+
+loadRainfall();
+
+</script>
+
+</body>
+</html>
+
