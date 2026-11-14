@@ -328,14 +328,79 @@ footer strong {color:#75e69c}
 
  </div>
 
- <!-- Farm Monitoring Map -->
- <div class="map" onclick="showFeature('map')">
+ <!-- FARM MONITORING MAP -->
+<div class="fm-dashboard">
 
-  <div>
-   <div style="font-size:50px">🗺️</div>
-   <h3>Farm Monitoring Map</h3>
-   <p>Satellite map integration can be added here.</p>
+  <div class="fm-map-panel">
+    <div class="fm-map-top">
+      <div>
+        <h3>🛰️ Satellite Field Monitoring</h3>
+        <p>Erode, Tamil Nadu | Demo Location</p>
+      </div>
+      <span class="fm-live">● LIVE DEMO</span>
+    </div>
+
+    <div id="farmMap"></div>
+
+    <div class="fm-legend">
+      <span>🟢 Healthy</span>
+      <span>🟡 Moderate</span>
+      <span>🔴 Critical</span>
+    </div>
   </div>
+
+  <div class="fm-sidebar">
+    <h3>🌱 Field Intelligence</h3>
+
+    <label>Select Farm Field</label>
+    <select id="fieldSelect" onchange="selectFarm()">
+      <option value="A">Field A - North Farm</option>
+      <option value="B">Field B - East Farm</option>
+      <option value="C">Field C - South Farm</option>
+    </select>
+
+    <div id="fieldStatus" class="fm-status">
+      <h2>Healthy 🌿</h2>
+      <p>Vegetation condition is good.</p>
+    </div>
+
+    <div class="fm-metric">
+      <span>🌿 NDVI Index</span>
+      <strong id="ndvi">0.82</strong>
+    </div>
+
+    <div class="fm-metric">
+      <span>💧 Soil Moisture</span>
+      <strong id="moisture">68%</strong>
+    </div>
+
+    <div class="fm-metric">
+      <span>🌡️ Temperature</span>
+      <strong id="temperature">29°C</strong>
+    </div>
+
+    <div class="fm-metric">
+      <span>📐 Farm Area</span>
+      <strong id="area">8.5 ha</strong>
+    </div>
+  </div>
+
+</div>
+
+<div class="fm-bottom">
+  <div>
+    <span>MONITORED AREA</span>
+    <h2>24.6 ha</h2>
+  </div>
+  <div>
+    <span>HEALTHY COVERAGE</span>
+    <h2>78%</h2>
+  </div>
+  <div>
+    <span>FIELD ALERTS</span>
+    <h2>02</h2>
+  </div>
+</div>
 
  </div>
 
