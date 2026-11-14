@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | NASA Climate Insights</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:Arial,sans-serif;
+  background:#07131d;color:#eaf7ff;
+}
+header{
+  padding:22px 7%;
+  background:#0c202d;
+  border-bottom:1px solid #244352;
+}
+header h2{color:#43d9c3}
+header p{color:#9cb5c2;margin-top:6px}
+.container{max-width:1200px;margin:auto;padding:25px 5%}
+.hero{margin:15px 0 25px}
+.hero h1{font-size:34px;color:#65e5d0}
+.hero p{color:#a9c1ce;margin-top:10px;line-height:1.6}
+button{
+  background:#16a995;color:white;border:0;
+  padding:12px 18px;border-radius:8px;
+  cursor:pointer;font-weight:bold;margin:8px 5px 8px 0;
+}
+button:hover{background:#087e70}
+input{
+  background:#102a39;color:white;border:1px solid #355565;
+  padding:12px;border-radius:8px;width:140px;
+}
+.location{
+  background:#102532;padding:18px;border-radius:12px;
+  margin:20px 0;color:#b9d2dc;line-height:1.8;
+}
+.grid{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  gap:15px;margin:20px 0;
+}
+.card{
+  background:#102532;border:1px solid #244653;
+  border-radius:13px;padding:20px;min-height:135px;
+}
+.card small{color:#8faeba}
+.card h2{font-size:27px;margin:14px 0;color:#5de0cb}
+.card p{color:#a9c1ce;font-size:13px}
+.section-title{margin:30px 0 15px;color:#5de0cb}
+#map{
+  height:420px;border-radius:14px;
+  border:1px solid #315363;z-index:1;
+}
+.note{
+  background:#102532;padding:16px;border-radius:10px;
+  margin-top:15px;color:#a9c1ce;line-height:1.7;
+}
+#status{color:#f4ce75;margin:12px 0}
+footer{text-align:center;padding:25px;color:#829ba8}
+@media(max-width:750px){
+  .grid{grid-template-columns:repeat(2,1fr)}
+  .hero h1{font-size:27px}
+  #map{height:340px}
+}
+@media(max-width:420px){
+  .grid{grid-template-columns:1fr 1fr}
+  .card{padding:14px}
+  input{width:115px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🌍 FARMSHIFT AI</h2>
+  <p>NASA Earth Observation & Climate Monitoring</p>
+</header>
+
+<div class="container">
+
+<section class="hero">
+  <h1>Climate Insights</h1>
+  <p>
+    Explore your location using NASA Earth observation data.
+    Monitor rainfall, temperature, humidity and satellite imagery.
+  </p>
+</section>
+
+<div class="location">
+  <b>📍 Selected Location</b>
+  <p id="place">Location not selected</p>
+  <p id="coordinates">Latitude: -- | Longitude: --</p>
+
+  <button onclick="getLocation()">Detect My Location</button>
+  <button onclick="loadData()">Refresh NASA Data</button>
+
+  <div style="margin-top:12px">
+    <input id="lat" type="number" step="any" placeholder="Latitude">
+    <input id="lon" type="number" step="any" placeholder="Longitude">
+    <button onclick="searchLocation()">Search Location</button>
+  </div>
+
+  <p id="status">Allow location access to begin.</p>
+</div>
+
+<h3 class="section-title">NASA Environmental Data</h3>
+
+<div class="grid">
+
+  <div class="card">
+    <small>🌡️ Land / Air Temperature</small>
+    <h2 id="temp">--</h2>
+    <p>NASA POWER · T2M</p>
+    <p id="tempDate">Observation date: --</p>
+  </div>
+
+  <div class="card">
+    <small>🌧️ Rainfall</small>
+    <h2 id="rain">--</h2>
+    <p>NASA POWER · PRECTOTCORR</p>
+    <p id="rainDate">Observation date: --</p>
+  </div>
+
+  <div class="card">
+    <small>💧 Relative Humidity</small>
+    <h2 id="humidity">--</h2>
+    <p>NASA POWER · RH2M</p>
+    <p id="humidityDate">Observation date: --</p>
+  </div>
+
+  <div class="card">
+    <small>💨 Wind Speed</small>
+    <h2 id="wind">--</h2>
+    <p>NASA POWER · WS2M</p>
+    <p id="windDate">Observation date: --</p>
+  </div>
+
+</div>
+
+<h3 class="section-title">🛰️ NASA Satellite View</h3>
+<div id="map"></div>
+
+<div class="note">
+  <b>Satellite Information</b>
+  <p id="satDate">Satellite observation date: --</p>
+  <p>
+    Source: NASA GIBS – MODIS Terra Corrected Reflectance.
+    Satellite imagery availability depends on observation and processing time.
+  </p>
+</div>
+
+<h3 class="section-title">About This Data</h3>
+<div class="note">
+  <p>
+    NASA POWER provides daily meteorological and solar data.
+    These values are gridded/model-based estimates and are not
+    measurements from a local weather station.
+  </p>
+  <p style="margin-top:10px">
+    NASA GIBS provides satellite imagery. Imagery dates and
+    data availability can vary by satellite and location.
+  </p>
+  <p style="margin-top:10px">
+    This page displays the latest valid observations returned
+    by the NASA service, not guaranteed instant live readings.
+  </p>
+</div>
+
+</div>
+
+<footer>
+  FarmShift AI | Powered by NASA Earth Observation Data
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+let latitude = null;
+let longitude = null;
+let map = null;
+let marker = null;
+let satelliteLayer = null;
+
+function setStatus(message){
+  document.getElementById("status").textContent = message;
+}
+
+function initializeMap(lat,lon){
+  if(!map){
+    map = L.map("map").setView([lat,lon],6);
+  }else{
+    map.setView([lat,lon],6);
+  }
+
+  if(marker) map.removeLayer(marker);
+
+  marker = L.marker([lat,lon]).addTo(map)
+    .bindPopup("Selected Location").openPopup();
+
+  updateSatellite();
+}
+
+function updateSatellite(){
+  if(!map) return;
+
+  if(satelliteLayer) map.removeLayer(satelliteLayer);
+
+  const date = new Date();
+  date.setUTCDate(date.getUTCDate()-2);
+  const dateString = date.toISOString().slice(0,10);
+
+  const url =
+  "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/" +
+  "MODIS_Terra_CorrectedReflectance_TrueColor/default/" +
+  dateString +
+  "/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg";
+
+  satelliteLayer = L.tileLayer(url,{
+    attribution:"NASA GIBS / MODIS Terra",
+    minZoom:1,
+    maxZoom:9,
+    tileSize:256
+  });
+
+  satelliteLayer.addTo(map);
+
+  document.getElementById("satDate").textContent =
+    "Requested satellite date: " + dateString +
+    " (imagery availability may vary)";
+}
+
+function getLocation(){
+  if(!navigator.geolocation){
+    setStatus("Geolocation is not supported by this browser.");
+    return;
+  }
+
+  setStatus("Detecting your location...");
+
+  navigator.geolocation.getCurrentPosition(
+    position=>{
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+
+      document.getElementById("lat").value = latitude.toFixed(5);
+      document.getElementById("lon").value = longitude.toFixed(5);
+
+      showLocation();
+      loadData();
+    },
+    error=>{
+      setStatus("Location permission denied or unavailable. Enter coordinates manually.");
+    },
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function searchLocation(){
+  const lat = parseFloat(document.getElementById("lat").value);
+  const lon = parseFloat(document.getElementById("lon").value);
+
+  if(!Number.isFinite(lat) || !Number.isFinite(lon) ||
+     lat < -90 || lat > 90 || lon < -180 || lon > 180){
+    setStatus("Please enter valid latitude and longitude.");
+    return;
+  }
+
+  latitude = lat;
+  longitude = lon;
+
+  showLocation();
+  loadData();
+}
+
+function showLocation(){
+  document.getElementById("place").textContent =
+    "Selected coordinates";
+
+  document.getElementById("coordinates").textContent =
+    "Latitude: " + latitude.toFixed(5) +
+    " | Longitude: " + longitude.toFixed(5);
+
+  initializeMap(latitude,longitude);
+}
+
+function latestValid(values){
+  if(!values) return null;
+
+  const entries = Object.entries(values)
+    .filter(([date,value])=>
+      value !== null &&
+      value !== undefined &&
+      Number.isFinite(Number(value)) &&
+      Number(value) !== -999
+    )
+    .sort((a,b)=>b[0].localeCompare(a[0]));
+
+  return entries.length ? entries[0] : null;
+}
+
+function displayValue(id,dateId,data,unit,decimals=1){
+  const valueElement = document.getElementById(id);
+  const dateElement = document.getElementById(dateId);
+
+  if(!data){
+    valueElement.textContent = "Unavailable";
+    dateElement.textContent = "Observation date: unavailable";
+    return;
+  }
+
+  valueElement.textContent =
+    Number(data[1]).toFixed(decimals) + " " + unit;
+
+  const d = data[0];
+  dateElement.textContent =
+    "Observation date: " +
+    d.slice(0,4) + "-" + d.slice(4,6) + "-" + d.slice(6,8);
+}
+
+async function loadData(){
+  if(latitude === null || longitude === null){
+    setStatus("Select a location first.");
+    return;
+  }
+
+  setStatus("Fetching NASA POWER data...");
+
+  ["temp","rain","humidity","wind"].forEach(id=>{
+    document.getElementById(id).textContent = "Loading...";
+  });
+
+  // Use a recent historical window so NASA's
+  // latest available daily records can be retrieved.
+  const end = new Date();
+  end.setUTCDate(end.getUTCDate()-7);
+
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate()-29);
+
+  const formatDate = d => d.toISOString().slice(0,10).replaceAll("-","");
+
+  const url =
+    "https://power.larc.nasa.gov/api/temporal/daily/point" +
+    "?parameters=T2M,PRECTOTCORR,RH2M,WS2M" +
+    "&community=AG" +
+    "&longitude=" + encodeURIComponent(longitude) +
+    "&latitude=" + encodeURIComponent(latitude) +
+    "&start=" + formatDate(start) +
+    "&end=" + formatDate(end) +
+    "&format=JSON" +
+    "&time-standard=UTC";
+
+  try{
+    const response = await fetch(url);
+
+    if(!response.ok){
+      throw new Error("NASA API HTTP " + response.status);
+    }
+
+    const json = await response.json();
+    const parameters = json.properties.parameter;
+
+    displayValue("temp","tempDate",
+      latestValid(parameters.T2M),"°C");
+
+    displayValue("rain","rainDate",
+      latestValid(parameters.PRECTOTCORR),"mm/day");
+
+    displayValue("humidity","humidityDate",
+      latestValid(parameters.RH2M),"%");
+
+    displayValue("wind","windDate",
+      latestValid(parameters.WS2M),"m/s");
+
+    setStatus("NASA POWER data retrieved successfully. Check each observation date.");
+
+  }catch(error){
+    console.error(error);
+    setStatus("NASA data could not be loaded. Please try again later.");
+    ["temp","rain","humidity","wind"].forEach(id=>{
+      document.getElementById(id).textContent = "Unavailable";
+    });
+  }
+}
+</script>
+
+</body>
+</html>
