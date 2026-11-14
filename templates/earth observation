@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | NASA Satellite Explorer</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#061510;color:#eafff1;
+  font-family:Arial,sans-serif;
+}
+header{
+  background:#09271a;padding:22px 6%;
+  border-bottom:1px solid #28533d;
+}
+header h2{color:#53e6a0}
+header p{color:#a6c9b5;margin-top:7px}
+.container{max-width:1200px;margin:auto;padding:25px 5%}
+.hero{margin:15px 0 25px}
+.hero h1{color:#55e5a0;font-size:32px}
+.hero p{color:#aac8b7;line-height:1.7;margin-top:10px}
+.panel{
+  background:#0c291b;border:1px solid #28543b;
+  border-radius:15px;padding:20px;margin:18px 0;
+}
+.section-title{color:#55e5a0;margin:28px 0 15px}
+.grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:14px;margin:15px 0;
+}
+.card{
+  background:#102d20;border:1px solid #315a41;
+  border-radius:12px;padding:17px;
+}
+.card h3{color:#59e7a4;margin-bottom:9px}
+.card p{color:#a9c8b6;line-height:1.6;font-size:13px}
+button{
+  padding:12px 15px;background:#159b61;
+  color:white;border:0;border-radius:8px;
+  margin:5px;cursor:pointer;font-weight:bold;
+}
+button:hover{background:#087d4b}
+input{
+  padding:12px;background:#071c12;
+  color:white;border:1px solid #45694e;
+  border-radius:8px;margin:5px;
+}
+#map{
+  height:460px;border-radius:13px;
+  border:1px solid #345d43;z-index:1;
+}
+#status{color:#f2d17c;margin:12px 0;line-height:1.6}
+.note{color:#a9c5b4;font-size:13px;line-height:1.7}
+.active{background:#d39b27;color:#071510}
+footer{text-align:center;padding:25px;color:#91ae9b}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  #map{height:350px}
+  .hero h1{font-size:27px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🛰️ FARMSHIFT AI</h2>
+  <p>NASA Earth Observation Satellite Explorer</p>
+</header>
+
+<div class="container">
+
+<section class="hero">
+  <h1>Satellite Explorer</h1>
+  <p>
+    Explore Earth using NASA satellite observations.
+    View vegetation, land temperature, rainfall and
+    satellite imagery for your selected location.
+  </p>
+</section>
+
+<div class="panel">
+  <h3>📍 Select Observation Location</h3>
+
+  <p id="locationText" style="margin:12px 0;color:#b1d2bc">
+    Location not selected
+  </p>
+
+  <input id="lat" type="number" step="any"
+  placeholder="Latitude">
+
+  <input id="lon" type="number" step="any"
+  placeholder="Longitude">
+
+  <br>
+
+  <button onclick="detectLocation()">Detect My Location</button>
+  <button onclick="searchLocation()">Search Coordinates</button>
+
+  <p id="status">Select a location to start satellite exploration.</p>
+</div>
+
+<h2 class="section-title">🌎 NASA Data Layers</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <h3>🌍 True Color</h3>
+    <p>MODIS Terra satellite surface imagery.</p>
+    <button onclick="selectLayer('truecolor')">Explore</button>
+  </div>
+
+  <div class="card">
+    <h3>🌿 Vegetation Index</h3>
+    <p>MODIS Terra NDVI 8-day vegetation imagery.</p>
+    <button onclick="selectLayer('ndvi')">Explore</button>
+  </div>
+
+  <div class="card">
+    <h3>🌡️ Land Temperature</h3>
+    <p>MODIS Terra daytime land surface temperature imagery.</p>
+    <button onclick="selectLayer('temperature')">Explore</button>
+  </div>
+
+  <div class="card">
+    <h3>🌧️ Precipitation</h3>
+    <p>NASA GPM IMERG precipitation rate visualization.</p>
+    <button onclick="selectLayer('rainfall')">Explore</button>
+  </div>
+
+  <div class="card">
+    <h3>🔥 Thermal Anomalies</h3>
+    <p>NASA MODIS thermal anomaly and fire observations.</p>
+    <button onclick="selectLayer('fires')">Explore</button>
+  </div>
+
+</div>
+
+<h2 class="section-title">🛰️ Interactive NASA Map</h2>
+
+<div class="panel">
+
+  <p class="note">
+    Select a NASA data layer and observation date to explore
+    satellite imagery.
+  </p>
+
+  <br>
+
+  <label for="date">Observation date:</label>
+  <input type="date" id="date">
+
+  <button onclick="refreshMap()">Update Map</button>
+
+  <div id="map"></div>
+
+  <p id="layerInfo" class="note" style="margin-top:14px">
+    Selected layer: MODIS Terra True Color
+  </p>
+
+</div>
+
+<h2 class="section-title">NASA Data Details</h2>
+
+<div class="panel">
+  <p class="note" id="dataDetails">
+    Data source: NASA Global Imagery Browse Services (GIBS).
+  </p>
+  <br>
+  <p class="note">
+    Imagery date: <span id="dateInfo">--</span>
+  </p>
+  <br>
+  <p class="note">
+    Selected location: <span id="coordinateInfo">--</span>
+  </p>
+  <br>
+  <p class="note">
+    NASA satellite imagery may have processing delays.
+    If a layer has no observation for the selected date,
+    the map may appear blank.
+  </p>
+</div>
+
+<div class="panel">
+  <h3 style="color:#55e5a0;margin-bottom:12px">
+    About NASA Satellite Data
+  </h3>
+  <p class="note">
+    NASA GIBS provides satellite imagery from multiple
+    Earth observation missions. These visualizations help
+    explore land, atmosphere, vegetation and environmental
+    conditions.
+  </p>
+  <br>
+  <p class="note">
+    A satellite visualization is not necessarily a direct
+    ground measurement. Interpret each layer according to
+    its source, resolution and observation period.
+  </p>
+</div>
+
+</div>
+
+<footer>
+  FarmShift AI | NASA Earth Observation
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+let map;
+let marker;
+let activeLayer;
+
+let currentLat = 11.0168;
+let currentLon = 76.9558;
+let selected = "truecolor";
+
+const NASA_WMS =
+"https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi";
+
+const layerConfig = {
+
+  truecolor:{
+    name:"MODIS_Terra_CorrectedReflectance_TrueColor",
+    title:"MODIS Terra True Color",
+    format:"image/jpeg",
+    transparent:false,
+    details:"Natural colour satellite surface imagery."
+  },
+
+  ndvi:{
+    name:"MODIS_Terra_NDVI_8Day",
+    title:"MODIS Terra NDVI 8-Day",
+    format:"image/png",
+    transparent:true,
+    details:"Vegetation greenness visualization. 8-day composite."
+  },
+
+  temperature:{
+    name:"MODIS_Terra_Land_Surface_Temp_Day",
+    title:"MODIS Terra Daytime Land Surface Temperature",
+    format:"image/png",
+    transparent:true,
+    details:"Satellite-derived daytime land surface temperature."
+  },
+
+  rainfall:{
+    name:"IMERG_Precipitation_Rate",
+    title:"NASA GPM IMERG Precipitation Rate",
+    format:"image/png",
+    transparent:true,
+    details:"Satellite-based precipitation rate visualization."
+  },
+
+  fires:{
+    name:"MODIS_Terra_Thermal_Anomalies_Day",
+    title:"MODIS Terra Daytime Thermal Anomalies",
+    format:"image/png",
+    transparent:true,
+    details:"Thermal anomaly observations; not every hotspot is a confirmed fire."
+  }
+
+};
+
+function initMap(){
+
+  if(map) return;
+
+  map = L.map("map").setView(
+    [currentLat,currentLon],6
+  );
+
+  loadLayer();
+}
+
+function loadLayer(){
+
+  if(!map) return;
+
+  const config = layerConfig[selected];
+  const date = document.getElementById("date").value;
+
+  if(activeLayer){
+    map.removeLayer(activeLayer);
+  }
+
+  activeLayer = L.tileLayer.wms(NASA_WMS,{
+    layers:config.name,
+    format:config.format,
+    transparent:config.transparent,
+    version:"1.1.1",
+    time:date,
+    attribution:"NASA GIBS / NASA Earthdata"
+  });
+
+  activeLayer.addTo(map);
+
+  document.getElementById("layerInfo").textContent =
+    "Selected layer: " + config.title;
+
+  document.getElementById("dataDetails").textContent =
+    config.details + " | Source: NASA GIBS.";
+
+  document.getElementById("dateInfo").textContent = date;
+
+  document.getElementById("coordinateInfo").textContent =
+    currentLat.toFixed(4) + ", " + currentLon.toFixed(4);
+
+  document.getElementById("status").textContent =
+    "NASA layer requested. Checking imagery availability...";
+}
+
+function selectLayer(type){
+
+  selected = type;
+
+  document.querySelectorAll(".grid button").forEach(btn=>{
+    btn.classList.remove("active");
+  });
+
+  if(!map){
+    initMap();
+  }
+
+  loadLayer();
+}
+
+function refreshMap(){
+  loadLayer();
+}
+
+function updateLocation(lat,lon){
+
+  currentLat = lat;
+  currentLon = lon;
+
+  document.getElementById("locationText").textContent =
+    "Latitude: " + lat.toFixed(5) +
+    " | Longitude: " + lon.toFixed(5);
+
+  document.getElementById("lat").value = lat;
+  document.getElementById("lon").value = lon;
+
+  if(!map) initMap();
+
+  map.setView([lat,lon],7);
+
+  if(marker) map.removeLayer(marker);
+
+  marker = L.marker([lat,lon])
+    .addTo(map)
+    .bindPopup("Selected Observation Location")
+    .openPopup();
+
+  loadLayer();
+}
+
+function detectLocation(){
+
+  if(!navigator.geolocation){
+    document.getElementById("status").textContent =
+      "Geolocation not supported.";
+    return;
+  }
+
+  document.getElementById("status").textContent =
+    "Detecting your location...";
+
+  navigator.geolocation.getCurrentPosition(
+
+    position=>{
+      updateLocation(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+    },
+
+    ()=>{
+      document.getElementById("status").textContent =
+        "Location permission denied. Enter coordinates manually.";
+    },
+
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function searchLocation(){
+
+  const lat = Number(document.getElementById("lat").value);
+  const lon = Number(document.getElementById("lon").value);
+
+  if(
+    !Number.isFinite(lat) ||
+    !Number.isFinite(lon) ||
+    lat < -90 || lat > 90 ||
+    lon < -180 || lon > 180
+  ){
+    document.getElementById("status").textContent =
+      "Enter valid latitude and longitude.";
+    return;
+  }
+
+  updateLocation(lat,lon);
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+
+  const date = new Date();
+
+  // A recent past date is used because satellite data
+  // may not yet be processed for the current day.
+  date.setUTCDate(date.getUTCDate()-3);
+
+  document.getElementById("date").value =
+    date.toISOString().slice(0,10);
+
+  initMap();
+});
+
+</script>
+
+</body>
+</html>
