@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NASA Earth Observation | FarmShift AI</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+body {
+  background: #030e17;
+  color: #e9fff5;
+}
+
+header {
+  padding: 20px 6%;
+  background: #071c20;
+  border-bottom: 1px solid #164a40;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  color: #61e6a8;
+  font-size: 21px;
+  font-weight: bold;
+}
+
+.back {
+  color: #65e6b0;
+  text-decoration: none;
+  border: 1px solid #31765d;
+  padding: 10px 16px;
+  border-radius: 8px;
+}
+
+.container {
+  padding: 35px 6%;
+}
+
+.heading {
+  margin-bottom: 25px;
+}
+
+.heading h1 {
+  color: #62e8ad;
+  font-size: 30px;
+}
+
+.heading p {
+  color: #a9c5ba;
+  margin-top: 10px;
+  line-height: 1.6;
+}
+
+.status {
+  color: #65e6a8;
+  font-size: 11px;
+  margin-top: 15px;
+  letter-spacing: 2px;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 20px;
+}
+
+.panel {
+  background: #09232a;
+  border: 1px solid #1d5149;
+  padding: 20px;
+  border-radius: 15px;
+}
+
+.panel h3 {
+  color: #61e6aa;
+  margin-bottom: 15px;
+}
+
+#earthMap {
+  height: 470px;
+  width: 100%;
+  border-radius: 10px;
+  z-index: 1;
+}
+
+.data {
+  padding: 17px 5px;
+  border-bottom: 1px solid #23443f;
+}
+
+.data span {
+  display: block;
+  color: #a9c5ba;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.data strong {
+  color: #61e6aa;
+  font-size: 16px;
+}
+
+.info {
+  margin-top: 20px;
+  background: #0a302b;
+  border: 1px solid #246b53;
+  padding: 20px;
+  border-radius: 12px;
+  line-height: 1.8;
+  color: #c6e7d9;
+}
+
+footer {
+  padding: 25px;
+  text-align: center;
+  color: #7fa99a;
+  font-size: 12px;
+}
+
+@media(max-width:750px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+
+  #earthMap {
+    height: 350px;
+  }
+
+  .heading h1 {
+    font-size: 24px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="logo">🌱 FarmShift AI</div>
+  <a class="back" href="index.html">← Dashboard</a>
+</header>
+
+<div class="container">
+
+  <div class="heading">
+    <h1>🌍 Earth Observation</h1>
+    <p>
+      Explore Earth from space using NASA satellite
+      observations and orbital imagery.
+    </p>
+    <div class="status">● NASA EARTH OBSERVATION MISSION</div>
+  </div>
+
+  <div class="dashboard">
+
+    <div class="panel">
+      <h3>🛰️ Orbital Satellite View</h3>
+      <div id="earthMap"></div>
+
+      <p style="margin-top:15px;color:#9bbab1;font-size:12px">
+        Satellite imagery provided by NASA GIBS
+      </p>
+    </div>
+
+    <div class="panel">
+      <h3>📡 Mission Information</h3>
+
+      <div class="data">
+        <span>Satellite Mission</span>
+        <strong>MODIS Terra</strong>
+      </div>
+
+      <div class="data">
+        <span>Observation Region</span>
+        <strong>Erode, Tamil Nadu</strong>
+      </div>
+
+      <div class="data">
+        <span>Data Provider</span>
+        <strong>NASA Earthdata</strong>
+      </div>
+
+      <div class="data">
+        <span>Imagery Type</span>
+        <strong>True Color</strong>
+      </div>
+
+      <div class="data">
+        <span>Satellite Product</span>
+        <strong>MODIS Reflectance</strong>
+      </div>
+
+      <div class="data">
+        <span>Observation Status</span>
+        <strong>Imagery Layer</strong>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="info">
+    <h3 style="color:#63e7ac;margin-bottom:10px">
+      🌿 Agricultural Earth Intelligence
+    </h3>
+
+    Satellite observations can help explore:
+
+    <ul style="padding-left:20px;margin-top:10px">
+      <li>Vegetation distribution</li>
+      <li>Land surface changes</li>
+      <li>Agricultural landscape patterns</li>
+      <li>Environmental observations</li>
+    </ul>
+  </div>
+
+</div>
+
+<footer>
+  FarmShift AI | NASA Earth Observation Demo
+  <br><br>
+  Imagery: NASA GIBS / MODIS Terra
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+const earthMap = L.map("earthMap").setView(
+  [11.3410, 77.7172], 8
+);
+
+L.tileLayer(
+  "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/2026-11-10/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg",
+  {
+    attribution: "NASA GIBS / MODIS Terra",
+    maxNativeZoom: 9,
+    maxZoom: 12
+  }
+).addTo(earthMap);
+
+L.marker([11.3410,77.7172])
+  .addTo(earthMap)
+  .bindPopup("Erode Observation Region")
+  .openPopup();
+</script>
+
+</body>
+</html>
+
