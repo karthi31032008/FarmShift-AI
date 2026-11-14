@@ -277,6 +277,9 @@ def water_awareness():
 def climate_insights():
     return render_template("climate-insights.html")
 
+@app.route("/crop-health")
+def crop_health():
+    return render_template("crop-health.html")
 
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
