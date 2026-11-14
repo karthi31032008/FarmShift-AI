@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FarmShift AI | Earth Intelligence Center</title>
+
+<link rel="stylesheet"
+href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  background:#07140f;color:#effff4;
+  font-family:Arial,sans-serif;
+}
+header{
+  padding:22px 6%;background:#0c261a;
+  border-bottom:1px solid #31533d;
+}
+header h2{color:#58e5a0}
+header p{color:#a8c7b4;margin-top:7px}
+.container{max-width:1200px;margin:auto;padding:25px 5%}
+.hero{padding:15px 0 25px}
+.hero h1{font-size:34px;color:#55e5a0}
+.hero p{color:#adc8b8;line-height:1.7;margin-top:10px}
+.panel{
+  background:#10291d;border:1px solid #2d553c;
+  border-radius:14px;padding:20px;margin:18px 0;
+}
+.section-title{color:#58e5a0;margin:28px 0 15px}
+input{
+  background:#071b12;color:white;
+  border:1px solid #456b50;border-radius:8px;
+  padding:12px;width:145px;margin:5px;
+}
+button{
+  background:#159b60;color:white;
+  border:0;border-radius:8px;padding:12px 17px;
+  margin:5px;cursor:pointer;font-weight:bold;
+}
+button:hover{background:#087c48}
+.grid{
+  display:grid;grid-template-columns:repeat(2,1fr);
+  gap:14px;margin:15px 0;
+}
+.card{
+  background:#102d20;border:1px solid #315a40;
+  padding:18px;border-radius:12px;
+}
+.card h3{color:#58e5a0;margin-bottom:12px}
+.card p{color:#b0cbb9;font-size:13px;line-height:1.6}
+.value{font-size:25px;color:#eaffef;margin:12px 0}
+.note{color:#adc6b5;font-size:13px;line-height:1.7}
+#map{height:350px;border-radius:12px;z-index:1}
+#status{color:#f0d17d;margin-top:12px;line-height:1.6}
+.report{
+  background:#071d13;border:1px solid #315c40;
+  border-radius:12px;padding:18px;margin-top:15px;
+}
+.report h3{color:#5ae5a1;margin-bottom:12px}
+.report p{color:#d1e8d8;line-height:1.8;margin:9px 0}
+.tag{
+  display:inline-block;background:#183c29;
+  color:#70e5a7;padding:6px 10px;
+  border-radius:20px;font-size:12px;margin:4px 0;
+}
+footer{text-align:center;padding:25px;color:#8da997}
+@media(max-width:600px){
+  .grid{grid-template-columns:1fr}
+  .hero h1{font-size:27px}
+  #map{height:300px}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🤖 FARMSHIFT AI</h2>
+  <p>NASA Earth Intelligence & Environmental Analysis</p>
+</header>
+
+<div class="container">
+
+<section class="hero">
+  <h1>Earth Intelligence Center</h1>
+  <p>
+    Analyze environmental conditions using NASA Earth observation
+    and climate datasets. Discover vegetation changes, rainfall
+    conditions and possible environmental stress.
+  </p>
+</section>
+
+<!-- LOCATION -->
+
+<div class="panel">
+  <h3>📍 Select Your Location</h3>
+
+  <p id="locationText" class="note" style="margin:12px 0">
+    Location not selected
+  </p>
+
+  <input id="lat" type="number" step="any"
+  placeholder="Latitude">
+
+  <input id="lon" type="number" step="any"
+  placeholder="Longitude">
+
+  <br>
+
+  <button onclick="detectLocation()">Detect My Location</button>
+  <button onclick="searchLocation()">Search Location</button>
+  <button onclick="runAnalysis()">Run AI Analysis</button>
+
+  <p id="status">Select a location to begin.</p>
+</div>
+
+<!-- NASA DATA -->
+
+<h2 class="section-title">NASA Environmental Intelligence</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <h3>🌡️ Temperature</h3>
+    <div class="value" id="temperature">--</div>
+    <p>NASA POWER · T2M</p>
+    <p id="temperatureDate">Observation: --</p>
+  </div>
+
+  <div class="card">
+    <h3>🌧️ Rainfall</h3>
+    <div class="value" id="rainfall">--</div>
+    <p>NASA POWER · PRECTOTCORR</p>
+    <p id="rainfallDate">Observation: --</p>
+  </div>
+
+  <div class="card">
+    <h3>💧 Relative Humidity</h3>
+    <div class="value" id="humidity">--</div>
+    <p>NASA POWER · RH2M</p>
+    <p id="humidityDate">Observation: --</p>
+  </div>
+
+  <div class="card">
+    <h3>💨 Wind Speed</h3>
+    <div class="value" id="wind">--</div>
+    <p>NASA POWER · WS2M</p>
+    <p id="windDate">Observation: --</p>
+  </div>
+
+</div>
+
+<!-- SATELLITE MAP -->
+
+<h2 class="section-title">🛰️ NASA Observation Map</h2>
+
+<div class="panel">
+  <p class="note">
+    Explore NASA MODIS vegetation imagery for your selected location.
+  </p>
+
+  <br>
+
+  <div id="map"></div>
+
+  <p id="mapInfo" class="note" style="margin-top:12px">
+    MODIS imagery will load after selecting a location.
+  </p>
+</div>
+
+<!-- ANALYSIS -->
+
+<h2 class="section-title">🧠 AI Environmental Analysis</h2>
+
+<div class="panel">
+
+  <p class="note">
+    AI analysis uses available NASA POWER climate observations.
+    The system checks temperature, rainfall and humidity
+    conditions to identify possible environmental concerns.
+  </p>
+
+  <br>
+
+  <button onclick="runAnalysis()">Generate Analysis Report</button>
+
+  <div id="analysisReport" class="report">
+    <h3>AI Analysis Report</h3>
+    <p>Waiting for NASA observations...</p>
+    <span class="tag">Analysis not started</span>
+  </div>
+
+</div>
+
+<!-- RECOMMENDATIONS -->
+
+<h2 class="section-title">🌱 Smart Farming Suggestions</h2>
+
+<div class="panel">
+  <div id="recommendations" class="note">
+    Recommendations will appear after NASA data analysis.
+  </div>
+</div>
+
+<!-- DATA INFORMATION -->
+
+<h2 class="section-title">NASA Data Sources</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <h3>NASA POWER</h3>
+    <p>Daily temperature, rainfall, humidity and wind information.</p>
+  </div>
+
+  <div class="card">
+    <h3>NASA MODIS</h3>
+    <p>Satellite vegetation imagery and Earth surface observations.</p>
+  </div>
+
+  <div class="card">
+    <h3>NASA GPM</h3>
+    <p>Satellite-based precipitation observations and rainfall products.</p>
+  </div>
+
+  <div class="card">
+    <h3>NASA SMAP</h3>
+    <p>Satellite soil moisture observations. Separate data integration is required for numerical values.</p>
+  </div>
+
+</div>
+
+<div class="panel">
+  <p class="note">
+    Data source: NASA POWER and NASA GIBS.
+    Daily data may have a processing delay. NASA MODIS imagery
+    is a satellite observation, not a direct crop disease diagnosis.
+  </p>
+  <br>
+  <p class="note">
+    AI recommendations are generated from available environmental
+    indicators. They should be verified through field inspection.
+  </p>
+</div>
+
+</div>
+
+<footer>
+  FarmShift AI | NASA Earth Observation Intelligence
+</footer>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script>
+
+let latitude = null;
+let longitude = null;
+let map = null;
+let marker = null;
+let vegetationLayer = null;
+let latestData = null;
+
+function status(message){
+  document.getElementById("status").textContent = message;
+}
+
+function detectLocation(){
+
+  if(!navigator.geolocation){
+    status("Location detection is not supported.");
+    return;
+  }
+
+  status("Detecting your location...");
+
+  navigator.geolocation.getCurrentPosition(
+
+    position=>{
+      latitude = position.coords.latitude;
+      longitude = position.coords.longitude;
+
+      document.getElementById("lat").value = latitude;
+      document.getElementById("lon").value = longitude;
+
+      showLocation();
+      loadNASAData();
+    },
+
+    ()=>{
+      status("Location permission denied. Enter coordinates manually.");
+    },
+
+    {enableHighAccuracy:true,timeout:15000}
+  );
+}
+
+function searchLocation(){
+
+  const lat = Number(document.getElementById("lat").value);
+  const lon = Number(document.getElementById("lon").value);
+
+  if(!Number.isFinite(lat) || !Number.isFinite(lon) ||
+     lat < -90 || lat > 90 || lon < -180 || lon > 180){
+
+    status("Enter valid latitude and longitude.");
+    return;
+  }
+
+  latitude = lat;
+  longitude = lon;
+
+  showLocation();
+  loadNASAData();
+}
+
+function showLocation(){
+
+  document.getElementById("locationText").textContent =
+    "Latitude: " + latitude.toFixed(4) +
+    " | Longitude: " + longitude.toFixed(4);
+
+  if(!map){
+
+    map = L.map("map").setView([latitude,longitude],6);
+
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {attribution:"© OpenStreetMap"}
+    ).addTo(map);
+
+  }else{
+    map.setView([latitude,longitude],6);
+  }
+
+  if(marker) map.removeLayer(marker);
+
+  marker = L.marker([latitude,longitude])
+    .addTo(map)
+    .bindPopup("Selected Analysis Location")
+    .openPopup();
+
+  loadVegetation();
+}
+
+function loadVegetation(){
+
+  if(!map) return;
+
+  if(vegetationLayer){
+    map.removeLayer(vegetationLayer);
+  }
+
+  const d = new Date();
+  d.setUTCDate(d.getUTCDate()-20);
+
+  const date = d.toISOString().slice(0,10);
+
+  vegetationLayer = L.tileLayer.wms(
+    "https://gibs.earthdata.nasa.gov/wms/epsg3857/best/wms.cgi",
+    {
+      layers:"MODIS_Terra_NDVI_8Day",
+      format:"image/png",
+      transparent:true,
+      version:"1.1.1",
+      time:date
+    }
+  );
+
+  vegetationLayer.addTo(map);
+
+  document.getElementById("mapInfo").textContent =
+    "NASA MODIS NDVI imagery requested for " + date +
+    ". Actual imagery availability depends on processing.";
+}
+
+function latestValid(values){
+
+  if(!values) return null;
+
+  const entries = Object.entries(values)
+    .filter(([date,value])=>
+      value !== null &&
+      value !== undefined &&
+      Number.isFinite(Number(value)) &&
+      Number(value) !== -999
+    )
+    .sort((a,b)=>b[0].localeCompare(a[0]));
+
+  return entries.length ? entries[0] : null;
+}
+
+function display(id,dateId,data,unit){
+
+  if(!data){
+    document.getElementById(id).textContent = "Unavailable";
+    document.getElementById(dateId).textContent = "Observation: unavailable";
+    return;
+  }
+
+  document.getElementById(id).textContent =
+    Number(data[1]).toFixed(1) + " " + unit;
+
+  const date = data[0];
+
+  document.getElementById(dateId).textContent =
+    "Observation: " + date.slice(0,4) + "-" +
+    date.slice(4,6) + "-" + date.slice(6,8);
+}
+
+async function loadNASAData(){
+
+  if(latitude === null || longitude === null){
+    status("Select a location first.");
+    return;
+  }
+
+  status("Connecting to NASA POWER...");
+
+  const end = new Date();
+  end.setUTCDate(end.getUTCDate()-7);
+
+  const start = new Date(end);
+  start.setUTCDate(start.getUTCDate()-29);
+
+  const formatDate = d =>
+    d.toISOString().slice(0,10).replaceAll("-","");
+
+  const url =
+    "https://power.larc.nasa.gov/api/temporal/daily/point" +
+    "?parameters=T2M,PRECTOTCORR,RH2M,WS2M" +
+    "&community=AG" +
+    "&longitude=" + encodeURIComponent(longitude) +
+    "&latitude=" + encodeURIComponent(latitude) +
+    "&start=" + formatDate(start) +
+    "&end=" + formatDate(end) +
+    "&format=JSON&time-standard=UTC";
+
+  try{
+
+    const response = await fetch(url);
+
+    if(!response.ok){
+      throw new Error("NASA POWER HTTP " + response.status);
+    }
+
+    const json = await response.json();
+    const p = json.properties.parameter;
+
+    latestData = {
+      temperature:latestValid(p.T2M),
+      rainfall:latestValid(p.PRECTOTCORR),
+      humidity:latestValid(p.RH2M),
+      wind:latestValid(p.WS2M)
+    };
+
+    display("temperature","temperatureDate",latestData.temperature,"°C");
+    display("rainfall","rainfallDate",latestData.rainfall,"mm/day");
+    display("humidity","humidityDate",latestData.humidity,"%");
+    display("wind","windDate",latestData.wind,"m/s");
+
+    status("NASA POWER observations loaded. Check individual observation dates.");
+
+  }catch(error){
+
+    console.error(error);
+
+    latestData = null;
+
+    ["temperature","rainfall","humidity","wind"].forEach(id=>{
+      document.getElementById(id).textContent = "Unavailable";
+    });
+
+    status("NASA data unavailable. Please try again later.");
+  }
+}
+
+function runAnalysis(){
+
+  if(!latestData){
+    status("Load valid NASA data before running analysis.");
+    return;
+  }
+
+  const t = latestData.temperature;
+  const r = latestData.rainfall;
+  const h = latestData.humidity;
+  const w = latestData.wind;
+
+  const report = document.getElementById("analysisReport");
+  const suggestions = document.getElementById("recommendations");
+
+  const findings = [];
+  const actions = [];
+
+  let usable = 0;
+
+  if(t){
+    usable++;
+
+    if(Number(t[1]) >= 35){
+      findings.push("High air temperature observed in the latest NASA POWER record.");
+      actions.push("Check crop water requirements and inspect plants for heat stress.");
+    }else if(Number(t[1]) >= 30){
+      findings.push("Warm air temperature conditions were observed.");
+      actions.push("Monitor soil moisture and crop condition during warmer periods.");
+    }else{
+      findings.push("No high-temperature threshold was triggered by the latest record.");
+    }
+  }
+
+  if(r){
+    usable++;
+
+    if(Number(r[1]) < 1){
+      findings.push("Very low daily precipitation was recorded on the latest observation date.");
+      actions.push("Check recent rainfall history and local irrigation requirements.");
+    }else{
+      findings.push("Rainfall was recorded in the latest daily observation.");
+      actions.push("Compare rainfall with crop water requirements before adjusting irrigation.");
+    }
+  }
+
+  if(h){
+    usable++;
+
+    if(Number(h[1]) < 40){
+      findings.push("Low relative humidity was observed.");
+      actions.push("Inspect crops for signs of moisture stress and check local field conditions.");
+    }else{
+      findings.push("Relative humidity is not below the selected low-humidity threshold.");
+    }
+  }
+
+  if(w){
+    usable++;
+
+    if(Number(w[1]) >= 8){
+      findings.push("Higher wind speed was observed.");
+      actions.push("Check vulnerable crops and irrigation application for wind effects.");
+    }else{
+      findings.push("No high-wind threshold was triggered.");
+    }
+  }
+
+  if(usable === 0){
+    report.innerHTML =
+      "<h3>AI Analysis Report</h3><p>No valid NASA observations available.</p>";
+    return;
+  }
+
+  report.innerHTML =
+    "<h3>Environmental Analysis Report</h3>" +
+    "<span class='tag'>Rule-based AI analysis</span>" +
+    "<p><b>Location:</b> " +
+    latitude.toFixed(4) + ", " + longitude.toFixed(4) +
+    "</p>" +
+    "<p><b>Available indicators:</b> " + usable + " / 4</p>" +
+    findings.map(x=>"<p>• "+x+"</p>").join("") +
+    "<p><b>Interpretation:</b> These are environmental indicators, not confirmed crop disease or field-level diagnoses.</p>";
+
+  suggestions.innerHTML =
+    "<h3 style='color:#58e5a0;margin-bottom:12px'>Recommended Field Actions</h3>" +
+    (actions.length
+      ? actions.map(x=>"<p style='margin:10px 0'>🌱 "+x+"</p>").join("")
+      : "<p>No recommendation can be generated from the available observations.</p>"
+    );
+
+  status("Analysis completed using available NASA POWER observations.");
+}
+
+</script>
+
+</body>
+</html>
+
