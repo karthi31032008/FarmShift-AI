@@ -281,6 +281,10 @@ def climate_insights():
 def crop_health():
     return render_template("crop-health.html")
 
+@app.route("/earth-observation")
+def earth_observation():
+    return render_template("satellite.html")
+
 # START SERVER - ALWAYS KEEP THIS AT THE END
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000)
